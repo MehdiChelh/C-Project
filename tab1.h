@@ -11,27 +11,26 @@
 #include <QPaintEvent>
 #include <QtGlobal>
 #include <vector>
+#include <QObject>
+#include <QFileDialog>
+#include <QMessageBox>
+#include "drawnn.h"
 
 class Tab1 : public QWidget
 {
+    Q_OBJECT
 public:
     Tab1();
     ~Tab1();
+public slots:
+    void resetInputFormNeurons();
+    void loadData();
 private:
     QGridLayout *grid;
     QPushButton *load_data_button;
     QPushButton *add_layer_button;
-};
-
-class DrawNN : public QWidget
-{
-public:
-    DrawNN(QWidget *parent);
-    void paintEvent(QPaintEvent *);
-    void wheelEvent ( QWheelEvent * event );
-private:
-    qreal scale;
-    std::vector <int> NNlayers;
+    QLineEdit * inputFormNeurons;
+    QString data;
 };
 
 #endif // TAB1_H
