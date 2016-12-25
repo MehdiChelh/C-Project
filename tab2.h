@@ -8,6 +8,13 @@
 #include <QFileDialog>
 #include <QMessageBox>
 #include <QObject>
+#include <QTableWidget>
+#include <QGraphicsScene>
+#include <QGraphicsView>
+#include <QGraphicsEllipseItem>
+#include <Qdebug>
+#include <QGraphicsSceneMouseEvent>
+#include <QLabel>
 
 class Tab2 : public QWidget
 {

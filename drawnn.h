@@ -24,6 +24,7 @@ public slots:
     void addLayer();
     void getNumberOfNeurons(QString);
     void popLayer();
+    std::vector <int> getNNlayers();
 private:
     qreal scale;
     std::vector <int> NNlayers;

@@ -6,7 +6,7 @@ Tab1::Tab1() : QWidget()
     this->setLayout(grid);
 
     //Widget contenant le painter affichant le NN
-    DrawNN *paintWidget = new DrawNN(this);
+    paintWidget = new DrawNN(this);
     grid -> addWidget(paintWidget, 1, 0, 1, 5);
 
     //Bouton pour ouvrir la boite de dialogue pour charger les données
@@ -31,24 +31,37 @@ Tab1::Tab1() : QWidget()
     add_layer_button = new QPushButton("Ajouter un layer");
     add_layer_button -> setCursor(Qt::PointingHandCursor);
     QObject::connect(add_layer_button, SIGNAL(clicked()), paintWidget, SLOT(addLayer()));
+    QObject::connect(add_layer_button, SIGNAL(clicked()), this, SLOT(enablingDisablingButtons()));
     QObject::connect(add_layer_button, SIGNAL(clicked()), this, SLOT(resetInputFormNeurons()));
     grid -> addWidget(add_layer_button, 0, 3);
 
-//    //Simple label qui sert à l'affichage de variables pour débuggage
-//    labelForDebug = new QLabel(this);
-//    //    labelForDebug->setFrameStyle(QFrame::Panel | QFrame::Sunken);
-//    labelForDebug->setText("Vide");
-//    labelForDebug->setAlignment(Qt::AlignBottom | Qt::AlignRight);
-//    grid -> addWidget(labelForDebug, 0, 5);
-
     //Bouton pour supprimer la dernière couche du NN
-    QPushButton *pop_layer_button = new QPushButton("Supprimer le dernier layer");
+    pop_layer_button = new QPushButton("Supprimer le dernier layer");
     pop_layer_button -> setCursor(Qt::PointingHandCursor);
+    pop_layer_button->setDisabled(paintWidget->getNNlayers().size() == 0);
+    qDebug() << paintWidget->getNNlayers().size();
     QObject::connect(pop_layer_button, SIGNAL(clicked()), paintWidget, SLOT(popLayer()));
+    QObject::connect(pop_layer_button, SIGNAL(clicked()), this, SLOT(enablingDisablingButtons()));
     grid -> addWidget(pop_layer_button, 0, 4);
+
+    //Bouton pour visualiser les données
+    QPushButton *see_data_button = new QPushButton("Visualiser les données");
+    see_data_button -> setCursor(Qt::PointingHandCursor);
+    QObject::connect(see_data_button, SIGNAL(clicked()), qApp, SLOT(quit()));
+    grid -> addWidget(see_data_button, 2, 0);
+
+    //Bouton qui lance le learning
+    learning_button = new QPushButton("Entrainer le réseau");
+    learning_button -> setCursor(Qt::PointingHandCursor);
+    QObject::connect(learning_button, SIGNAL(clicked()), qApp, SLOT(quit()));
+    grid -> addWidget(learning_button, 2, 1);
 }
 void Tab1::resetInputFormNeurons(){
     inputFormNeurons->clear();
+}
+void Tab1::enablingDisablingButtons(){
+    pop_layer_button->setEnabled(paintWidget->getNNlayers().size() > 0);
+    learning_button->setEnabled(paintWidget->getNNlayers().size() > 0);
 }
 void Tab1::loadData()
 {
