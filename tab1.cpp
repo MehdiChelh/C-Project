@@ -7,7 +7,7 @@ Tab1::Tab1() : QWidget()
 
     //Widget contenant le painter affichant le NN
     paintWidget = new DrawNN(this);
-    grid -> addWidget(paintWidget, 1, 0, 1, 5);
+    grid -> addWidget(paintWidget, 1, 0, 1, 6);
 
     //Bouton pour ouvrir la boite de dialogue pour charger les données
     load_data_button = new QPushButton("Load external data");
@@ -20,20 +20,24 @@ Tab1::Tab1() : QWidget()
     QObject::connect(select_data_button, SIGNAL(clicked()), this, SLOT(selectData()));
     grid -> addWidget(select_data_button, 0, 1);
 
+    QLabel *labelNeurons = new QLabel(this);
+    labelNeurons->setText("Ajouter une couche :");
+    grid->addWidget(labelNeurons, 0,2);
+
     //Input pour le nombre de neurones du NN à ajouter
     inputFormNeurons = new QLineEdit(this);
-    inputFormNeurons->setPlaceholderText("Entrer le nombre de neurones du layer");
+    inputFormNeurons->setPlaceholderText("");
     inputFormNeurons->setValidator(new QIntValidator(inputFormNeurons));
     QObject::connect(inputFormNeurons, SIGNAL(textChanged(QString)), paintWidget, SLOT(getNumberOfNeurons(QString)));
-    grid -> addWidget(inputFormNeurons, 0,2);
+    grid -> addWidget(inputFormNeurons, 0,3);
 
     //Bouton pour ajouter une couche au NN
-    add_layer_button = new QPushButton("Ajouter un layer");
+    add_layer_button = new QPushButton("+");
     add_layer_button -> setCursor(Qt::PointingHandCursor);
     QObject::connect(add_layer_button, SIGNAL(clicked()), paintWidget, SLOT(addLayer()));
     QObject::connect(add_layer_button, SIGNAL(clicked()), this, SLOT(enablingDisablingButtons()));
     QObject::connect(add_layer_button, SIGNAL(clicked()), this, SLOT(resetInputFormNeurons()));
-    grid -> addWidget(add_layer_button, 0, 3);
+    grid -> addWidget(add_layer_button, 0, 4);
 
     //Bouton pour supprimer la dernière couche du NN
     pop_layer_button = new QPushButton("Supprimer le dernier layer");
@@ -42,7 +46,7 @@ Tab1::Tab1() : QWidget()
     qDebug() << paintWidget->getNNlayers().size();
     QObject::connect(pop_layer_button, SIGNAL(clicked()), paintWidget, SLOT(popLayer()));
     QObject::connect(pop_layer_button, SIGNAL(clicked()), this, SLOT(enablingDisablingButtons()));
-    grid -> addWidget(pop_layer_button, 0, 4);
+    grid -> addWidget(pop_layer_button, 0, 5);
 
     //Bouton pour visualiser les données
     QPushButton *see_data_button = new QPushButton("Visualiser les données");
