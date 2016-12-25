@@ -24,21 +24,21 @@ Tab1::Tab1() : QWidget()
     labelNeurons->setText("Ajouter une couche :");
     grid->addWidget(labelNeurons, 0,2);
 
+    //Bouton pour ajouter une couche au NN
+    add_layer_button = new QPushButton("+");
+    add_layer_button -> setCursor(Qt::PointingHandCursor);
+    QObject::connect(add_layer_button, SIGNAL(clicked()), paintWidget, SLOT(addLayer()));
+    QObject::connect(add_layer_button, SIGNAL(clicked()), this, SLOT(enablingDisablingButtons()));
+    QObject::connect(add_layer_button, SIGNAL(clicked()), this, SLOT(resetInputFormNeurons()));
+    grid -> addWidget(add_layer_button, 0, 4);
+
     //Input pour le nombre de neurones du NN à ajouter
     inputFormNeurons = new QLineEdit(this);
     inputFormNeurons->setPlaceholderText("");
     inputFormNeurons->setValidator(new QIntValidator(inputFormNeurons));
     QObject::connect(inputFormNeurons, SIGNAL(textChanged(QString)), paintWidget, SLOT(getNumberOfNeurons(QString)));
-    QObject::connect(inputFormNeurons, SIGNAL(returnPressed()), paintWidget, SLOT(addLayer()));
-    QObject::connect(inputFormNeurons, SIGNAL(returnPressed()), this, SLOT(enablingDisablingButtons()));
+    QObject::connect(inputFormNeurons, SIGNAL(returnPressed()), add_layer_button, SIGNAL(clicked()));
     grid -> addWidget(inputFormNeurons, 0,3);
-
-    //Bouton pour ajouter une couche au NN
-    add_layer_button = new QPushButton("+");
-    add_layer_button -> setCursor(Qt::PointingHandCursor);
-    QObject::connect(add_layer_button, SIGNAL(clicked()), paintWidget, SLOT(addLayer()));
-    QObject::connect(add_layer_button, SIGNAL(clicked()), this->add_layer_button, SIGNAL(clicked()));
-    grid -> addWidget(add_layer_button, 0, 4);
 
     //Bouton pour supprimer la dernière couche du NN
     pop_layer_button = new QPushButton("Supprimer le dernier layer");
