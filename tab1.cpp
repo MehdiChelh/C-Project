@@ -10,14 +10,14 @@ Tab1::Tab1() : QWidget()
     grid -> addWidget(paintWidget, 1, 0, 1, 5);
 
     //Bouton pour ouvrir la boite de dialogue pour charger les données
-    load_data_button = new QPushButton("Load data");
+    load_data_button = new QPushButton("Load external data");
     load_data_button -> setCursor(Qt::PointingHandCursor);
     QObject::connect(load_data_button, SIGNAL(clicked()), this, SLOT(loadData()));
     grid -> addWidget(load_data_button, 0, 0);
 
     QPushButton *select_data_button = new QPushButton("Select data");
     select_data_button -> setCursor(Qt::PointingHandCursor);
-    QObject::connect(select_data_button, SIGNAL(clicked()), qApp, SLOT(quit()));
+    QObject::connect(select_data_button, SIGNAL(clicked()), this, SLOT(selectData()));
     grid -> addWidget(select_data_button, 0, 1);
 
     //Input pour le nombre de neurones du NN à ajouter
@@ -32,8 +32,14 @@ Tab1::Tab1() : QWidget()
     add_layer_button -> setCursor(Qt::PointingHandCursor);
     QObject::connect(add_layer_button, SIGNAL(clicked()), paintWidget, SLOT(addLayer()));
     QObject::connect(add_layer_button, SIGNAL(clicked()), this, SLOT(resetInputFormNeurons()));
-    //QObject::connect(add_layer_button, SIGNAL(clicked()), qApp, paintWidget->addLayer(1));
     grid -> addWidget(add_layer_button, 0, 3);
+
+//    //Simple label qui sert à l'affichage de variables pour débuggage
+//    labelForDebug = new QLabel(this);
+//    //    labelForDebug->setFrameStyle(QFrame::Panel | QFrame::Sunken);
+//    labelForDebug->setText("Vide");
+//    labelForDebug->setAlignment(Qt::AlignBottom | Qt::AlignRight);
+//    grid -> addWidget(labelForDebug, 0, 5);
 
     //Bouton pour supprimer la dernière couche du NN
     QPushButton *pop_layer_button = new QPushButton("Supprimer le dernier layer");
@@ -50,9 +56,21 @@ void Tab1::loadData()
     if(data != ""){
         QMessageBox::information(this, "Fichier", "Vous avez sélectionné :\n" + data);
     }
-    else{
-        QMessageBox::information(this, "Fichier", "Vous n'avez pas sélectionné de fichier");
-    }
+}
+
+void Tab1::selectData()
+{
+    QStringList items;
+    items << tr("Sélectionner les données") << tr("---Financières---") << tr("AAPL") << tr("GOOGL") << tr("---Météorologiques---") << tr("Paris");
+    QStringList forbiddenItems;
+    forbiddenItems << tr("Sélectionner les données") << tr("---Financières---") << tr("---Météorologiques---") ;
+    bool ok;
+    QString item = QInputDialog::getItem(this, tr("Train data"),
+                                         tr("Jeux de données à mettre en entrée \n "
+                                            "pour la phase d'apprentissage :"),
+                                         items, 0, false, &ok);
+    if (ok && !item.isEmpty() && !forbiddenItems.contains(item))
+        labelForDebug->setText(item);
 }
 
 Tab1::~Tab1()

@@ -14,6 +14,8 @@
 #include <QObject>
 #include <QFileDialog>
 #include <QMessageBox>
+#include <QInputDialog>
+#include <QLabel>
 #include "drawnn.h"
 
 class Tab1 : public QWidget
@@ -25,11 +27,13 @@ public:
 public slots:
     void resetInputFormNeurons();
     void loadData();
+    void selectData();
 private:
     QGridLayout *grid;
     QPushButton *load_data_button;
     QPushButton *add_layer_button;
     QLineEdit * inputFormNeurons;
+    QLabel *labelForDebug;
     QString data;
 };
 
