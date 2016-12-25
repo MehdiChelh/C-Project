@@ -12,6 +12,7 @@
 #include <QtGlobal>
 #include <vector>
 #include <QObject>
+#include <QDebug>
 
 
 class DrawNN : public QWidget
@@ -20,6 +21,8 @@ class DrawNN : public QWidget
 public:
     DrawNN(QWidget *parent);
     void paintEvent(QPaintEvent *);
+protected:
+    void mouseMoveEvent(QMouseEvent * event);
 public slots:
     void addLayer();
     void getNumberOfNeurons(QString);
@@ -29,6 +32,9 @@ private:
     qreal scale;
     std::vector <int> NNlayers;
     int number_of_neurons_for_new_layer;
+    std::vector <int> rect;
+    std::vector <int> delimiters;
+    float ellipse_size;
 };
 
 #endif // DRAWNN_H
