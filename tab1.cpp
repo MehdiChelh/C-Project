@@ -7,7 +7,7 @@ Tab1::Tab1() : QWidget()
 
     //Widget contenant le painter affichant le NN
     DrawNN *paintWidget = new DrawNN(this);
-    grid -> addWidget(paintWidget, 1, 1, 1, 3);
+    grid -> addWidget(paintWidget, 1, 0, 1, 5);
 
     //Bouton pour ouvrir la boite de dialogue pour charger les données
     load_data_button = new QPushButton("Load data");
@@ -47,7 +47,12 @@ void Tab1::resetInputFormNeurons(){
 void Tab1::loadData()
 {
     data = QFileDialog::getOpenFileName(this, "Ouvrir un fichier", QString(), "*.csv");
-    QMessageBox::information(this, "Fichier", "Vous avez sélectionné :\n" + data);
+    if(data != ""){
+        QMessageBox::information(this, "Fichier", "Vous avez sélectionné :\n" + data);
+    }
+    else{
+        QMessageBox::information(this, "Fichier", "Vous n'avez pas sélectionné de fichier");
+    }
 }
 
 Tab1::~Tab1()

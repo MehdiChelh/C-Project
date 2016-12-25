@@ -6,7 +6,7 @@ Window::Window() : QTabWidget()
 {
     const int width = 800;
     const int height = width*9/16;
-    setFixedSize(width, height);
+    resize(width, height);
 
     tab1 = new Tab1();
     const QString label ="Train";
