@@ -24,10 +24,10 @@ void DrawNN::paintEvent(QPaintEvent *)
             }
         }
         maxNeuronsPerLayer = *max_element(NNlayers.begin(), NNlayers.end());
-        ellipse_size = std::max(std::min(0.95*HEIGHT/maxNeuronsPerLayer,
-                                    0.95*WIDTH/NNlayers.size()), double(2.0));
+        ellipse_size = std::max(std::min(1.0*HEIGHT/maxNeuronsPerLayer,
+                                    1.0*WIDTH/NNlayers.size()), double(4.0));
         if(rect.size() >= 2){
-            painter.drawRect(rect[0], 0, std::max(ellipse_size, float(10.0)), HEIGHT);
+            painter.drawRect(rect[0], 0, std::max(ellipse_size, float(4.0)), HEIGHT);
         }
         //dy permet d'effectuer le décallage nécessaire pour centrer les layers dans le painter
         float dy = 0;

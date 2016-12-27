@@ -50,17 +50,23 @@ Tab1::Tab1() : QWidget()
     grid -> addWidget(pop_layer_button, 0, 5);
 
     //Bouton pour visualiser les données
+    QPushButton *data_preprocess_button = new QPushButton("Data preprocessing");
+    data_preprocess_button -> setCursor(Qt::PointingHandCursor);
+    QObject::connect(data_preprocess_button, SIGNAL(clicked()), this, SLOT(DataPreprocessDialog()));
+    grid -> addWidget(data_preprocess_button, 2, 0);
+
+    //Bouton pour visualiser les données
     QPushButton *see_data_button = new QPushButton("Visualiser les données");
     see_data_button -> setCursor(Qt::PointingHandCursor);
-    QObject::connect(see_data_button, SIGNAL(clicked()), qApp, SLOT(quit()));
-    grid -> addWidget(see_data_button, 2, 0);
+    QObject::connect(see_data_button, SIGNAL(clicked()), this, SLOT(seeData()));
+    grid -> addWidget(see_data_button, 2, 1);
 
     //Bouton qui lance le learning
     learning_button = new QPushButton("Entrainer le réseau");
     learning_button -> setCursor(Qt::PointingHandCursor);
     learning_button -> setDisabled(true);
     QObject::connect(learning_button, SIGNAL(clicked()), qApp, SLOT(quit()));
-    grid -> addWidget(learning_button, 2, 1);
+    grid -> addWidget(learning_button, 2, 5);
 }
 void Tab1::resetInputFormNeurons(){
     inputFormNeurons->clear();
@@ -90,6 +96,48 @@ void Tab1::selectData()
                                          items, 0, false, &ok);
     if (ok && !item.isEmpty() && !forbiddenItems.contains(item))
         labelForDebug->setText(item);
+}
+
+void Tab1::DataPreprocessDialog()
+{
+    QDialog *dialog = new QDialog();
+    QGridLayout *grid = new QGridLayout();
+    dialog->setLayout(grid);
+    dialog -> resize(500, 500*9/16);
+
+    CodeEdit *code = new CodeEdit(dialog);
+    //QColor bgColor;
+    //bgColor.setRgb(60,60,60);
+    //code->setBackgroundRole(bgColor);
+    code->setStyleSheet("QTextEdit { background: rgb(60, 60, 60); "
+                        "selection-background-color: rgb(233, 99, 0); "
+                        "color:rgb(255,255,255) }");
+    QObject::connect(code, SIGNAL(textChanged()), code, SLOT(codeTransformation()));
+    code->setHtml("<b style='color:#F00'>Hey</b> hey");
+    grid -> addWidget(code);
+    dialog->exec();
+}
+
+CodeEdit::CodeEdit(QDialog *parent): QTextEdit(parent)
+{
+}
+
+void CodeEdit::codeTransformation()
+{
+    QString text = this->toHtml();
+    qDebug() << text;
+    //this->setHtml(text);
+}
+
+void Tab1::seeData()
+{
+    QDialog *dialog = new QDialog();
+    QGridLayout *grid = new QGridLayout();
+    dialog->setLayout(grid);
+    dialog -> resize(500, 500*9/16);
+    QTableWidget *table = new QTableWidget(30, 30, dialog);
+    grid -> addWidget(table);
+    dialog->exec();
 }
 
 Tab1::~Tab1()

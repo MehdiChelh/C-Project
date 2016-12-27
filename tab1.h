@@ -17,6 +17,10 @@
 #include <QInputDialog>
 #include <QLabel>
 #include <QDebug>
+#include <QDialog>
+#include <QTableWidget>
+#include <QTextEdit>
+#include <QColor>
 #include "drawnn.h"
 
 class Tab1 : public QWidget
@@ -30,6 +34,8 @@ public slots:
     void loadData();
     void selectData();
     void enablingDisablingButtons();
+    void seeData();
+    void DataPreprocessDialog();
 private:
     QGridLayout *grid;
     QPushButton *load_data_button;
@@ -40,6 +46,15 @@ private:
     QLabel *labelForDebug;
     QString data;
     DrawNN *paintWidget;
+};
+
+class CodeEdit : public QTextEdit
+{
+    Q_OBJECT
+public:
+    CodeEdit(QDialog*);
+public slots:
+    void codeTransformation();
 };
 
 #endif // TAB1_H
