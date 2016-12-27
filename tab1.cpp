@@ -115,7 +115,7 @@ void Tab1::DataPreprocessDialog()
     QObject::connect(code, SIGNAL(textChanged()), code, SLOT(codeTransformation()));
     code->setHtml("<b style='color:#F00'>Hey</b> hey");
     grid -> addWidget(code);
-    dialog->exec();
+    dialog->show();
 }
 
 CodeEdit::CodeEdit(QDialog *parent): QTextEdit(parent)
@@ -137,7 +137,7 @@ void Tab1::seeData()
     dialog -> resize(500, 500*9/16);
     QTableWidget *table = new QTableWidget(30, 30, dialog);
     grid -> addWidget(table);
-    dialog->exec();
+    dialog->show();
 }
 
 Tab1::~Tab1()
