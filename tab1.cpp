@@ -101,6 +101,7 @@ void Tab1::selectData()
 void Tab1::DataPreprocessDialog()
 {
     QDialog *dialog = new QDialog();
+    dialog->setWindowTitle(QString("Python code editor for data preprocessing "));
     QGridLayout *grid = new QGridLayout();
     dialog->setLayout(grid);
     dialog -> resize(500, 500*9/16);
@@ -110,6 +111,7 @@ void Tab1::DataPreprocessDialog()
                         "selection-background-color: rgb(233, 99, 0); "
                         "color:rgb(255,255,255) }");
     code->setTabStopWidth(20);
+    code->setText("def(data):\n\t#Your code\n\t#Data is a pandas dataframe\n\treturn data");
     MyHighlighter *highlighter = new MyHighlighter(code->document());
     grid -> addWidget(code);
     dialog->show();
@@ -179,6 +181,7 @@ void MyHighlighter::highlightBlock(const QString &text)
 void Tab1::seeData()
 {
     QDialog *dialog = new QDialog();
+    dialog->setWindowTitle(QString("Visualisation des données"));
     QGridLayout *grid = new QGridLayout();
     dialog->setLayout(grid);
     dialog -> resize(500, 500*9/16);
