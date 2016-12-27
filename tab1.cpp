@@ -105,29 +105,76 @@ void Tab1::DataPreprocessDialog()
     dialog->setLayout(grid);
     dialog -> resize(500, 500*9/16);
 
-    CodeEdit *code = new CodeEdit(dialog);
-    //QColor bgColor;
-    //bgColor.setRgb(60,60,60);
-    //code->setBackgroundRole(bgColor);
+    QTextEdit *code = new QTextEdit(dialog);
     code->setStyleSheet("QTextEdit { background: rgb(60, 60, 60); "
                         "selection-background-color: rgb(233, 99, 0); "
                         "color:rgb(255,255,255) }");
-    QObject::connect(code, SIGNAL(textChanged()), code, SLOT(codeTransformation()));
-    code->setHtml("<b style='color:#F00'>Hey</b> hey");
+    code->setTabStopWidth(20);
+    MyHighlighter *highlighter = new MyHighlighter(code->document());
     grid -> addWidget(code);
     dialog->show();
 }
 
-CodeEdit::CodeEdit(QDialog *parent): QTextEdit(parent)
+MyHighlighter::MyHighlighter(QTextDocument *parent): QSyntaxHighlighter(parent)
 {
+    HighlightingRule rule;
+
+    QColor color(250,0,0);
+    keywordFormat.setForeground(QBrush(QColor(247,89,197)));
+    keywordFormat.setFontWeight(QFont::Bold);
+    QStringList keywordPatterns;
+    keywordPatterns << "\\bimport\\b" << "\\bdef\\b"
+                    << "\\bfrom\\b" << "\\breturn\\b";
+    foreach (const QString &pattern, keywordPatterns) {
+        rule.pattern = QRegExp(pattern);
+        rule.format = keywordFormat;
+        highlightingRules.append(rule);
+    }
+
+    quotationFormat.setForeground(QBrush(QColor(57,247,117)));
+    rule.pattern = QRegExp("\".*\"");
+    rule.format = quotationFormat;
+    highlightingRules.append(rule);
+
+    functionFormat.setFontItalic(true);
+    functionFormat.setForeground(QBrush(QColor(41,255,244)));
+    rule.pattern = QRegExp("\\b[A-Za-z0-9_]+(?=\\()");
+    rule.format = functionFormat;
+    highlightingRules.append(rule);
+
+    singleLineCommentFormat.setForeground(QBrush(QColor(200,200,200)));
+    rule.pattern = QRegExp("#[^\n]*");
+    rule.format = singleLineCommentFormat;
+    highlightingRules.append(rule);
+}
+void MyHighlighter::highlightBlock(const QString &text)
+{
+    QTextCharFormat myClassFormat;
+    myClassFormat.setFontWeight(QFont::Bold);
+    myClassFormat.setForeground(Qt::darkMagenta);
+    QString pattern = "\\bMy[A-Za-z]+\\b";
+
+
+    QRegExp expression(pattern);
+    int index = text.indexOf(expression);
+    while (index >= 0) {
+        int length = expression.matchedLength();
+        setFormat(index, length, myClassFormat);
+        index = text.indexOf(expression, index + length);
+    }
+
+
+    foreach (const HighlightingRule &rule, highlightingRules) {
+        QRegExp expression(rule.pattern);
+        int index = expression.indexIn(text);
+        while (index >= 0) {
+            int length = expression.matchedLength();
+            setFormat(index, length, rule.format);
+            index = expression.indexIn(text, index + length);
+        }
+    }
 }
 
-void CodeEdit::codeTransformation()
-{
-    QString text = this->toHtml();
-    qDebug() << text;
-    //this->setHtml(text);
-}
 
 void Tab1::seeData()
 {

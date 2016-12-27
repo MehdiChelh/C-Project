@@ -21,6 +21,7 @@
 #include <QTableWidget>
 #include <QTextEdit>
 #include <QColor>
+#include <QSyntaxHighlighter>
 #include "drawnn.h"
 
 class Tab1 : public QWidget
@@ -48,13 +49,24 @@ private:
     DrawNN *paintWidget;
 };
 
-class CodeEdit : public QTextEdit
+
+class MyHighlighter : public QSyntaxHighlighter
 {
     Q_OBJECT
 public:
-    CodeEdit(QDialog*);
-public slots:
-    void codeTransformation();
+    MyHighlighter(QTextDocument * parent);
+    void highlightBlock(const QString &text);
+private:
+    struct HighlightingRule
+    {
+        QRegExp pattern;
+        QTextCharFormat format;
+    };
+    QVector<HighlightingRule> highlightingRules;
+    QTextCharFormat keywordFormat;
+    QTextCharFormat quotationFormat;
+    QTextCharFormat functionFormat;
+    QTextCharFormat singleLineCommentFormat;
 };
 
 #endif // TAB1_H
