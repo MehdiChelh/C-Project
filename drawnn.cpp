@@ -34,11 +34,12 @@ void DrawNN::paintEvent(QPaintEvent *)
         float dyNext = 0;//dyNext est utile uniquement si l'on décide d'afficher les arrêtes du graphe
         //xSpace correspond à l'espacement entre chaque layer
         float xSpace = (WIDTH - NNlayers.size()*ellipse_size)/(nLayers);
+        delimiters.clear();
         for(int i = 0; i < nLayers; i++){
             dy = (HEIGHT - NNlayers[i]*ellipse_size)/2;
+            delimiters.push_back(((xSpace + ellipse_size)*i));
             for(int j = 0; j < NNlayers[i]; j++){
                 painter.drawEllipse(xSpace*i + i*ellipse_size, dy + j*ellipse_size, ellipse_size, ellipse_size);
-                delimiters.push_back(xSpace*i + i*ellipse_size);
                 if(i < nLayers - 1){
                     dyNext = (HEIGHT - NNlayers[i+1]*ellipse_size)/2;
                     for(int k = 0; k < NNlayers[i+1]; k++){
@@ -67,6 +68,34 @@ void DrawNN::mouseMoveEvent(QMouseEvent * event)
         rect.clear();
     }
     update();
+}
+void DrawNN::mousePressEvent(QMouseEvent * event)
+{
+    int x = event->pos().x();
+    for(int i = 0; i < delimiters.size(); i++)
+    {
+        if(x < delimiters[i]+ellipse_size && delimiters[i] < x)
+        {
+            QString title = "Layer n°" + QString::number(i);
+            QString text = "Nombre de neurones : " + QString::number(NNlayers[i]);
+            text += QString("\n\nChanger le nombre de neurones :");
+            QString neurons = QInputDialog::getText(this, title, text);
+            qDebug() << neurons;
+            if(neurons != QString(""))
+            {
+                if(neurons.toInt() == 0){
+                    QMessageBox::StandardButton reply = QMessageBox::question(this, "Layer n°" + QString::number(i),
+                                                                              "Voulez vous supprimer ce layer ?",
+                                                                              QMessageBox::Yes|QMessageBox::No);
+                    if (reply == QMessageBox::Yes) {
+                        NNlayers.erase(NNlayers.begin() + i);
+                    }
+                } else {
+                    NNlayers[i] = neurons.toInt();
+                }
+            }
+        }
+    }
 }
 
 void DrawNN::addLayer()

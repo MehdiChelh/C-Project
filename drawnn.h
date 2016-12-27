@@ -13,7 +13,8 @@
 #include <vector>
 #include <QObject>
 #include <QDebug>
-
+#include <QInputDialog>
+#include <QMessageBox>
 
 class DrawNN : public QWidget
 {
@@ -21,6 +22,7 @@ class DrawNN : public QWidget
 public:
     DrawNN(QWidget *parent);
     void paintEvent(QPaintEvent *);
+    void mousePressEvent(QMouseEvent * event);
 protected:
     void mouseMoveEvent(QMouseEvent * event);
 public slots:
