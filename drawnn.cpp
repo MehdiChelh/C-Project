@@ -2,6 +2,8 @@
 
 DrawNN::DrawNN(QWidget *parent) : QWidget(parent)
 {
+
+    //const QColor *color = new QColor(0,0,0);
     setBackgroundRole(QPalette::Base);
     setAutoFillBackground(true);
     setMouseTracking(true);
@@ -9,6 +11,12 @@ DrawNN::DrawNN(QWidget *parent) : QWidget(parent)
 void DrawNN::paintEvent(QPaintEvent *)
 {
     QPainter painter(this);
+    painter.setRenderHint(QPainter::Antialiasing);
+    painter.setBackground(QBrush(QColor(249, 135, 255)));
+    painter.setBrush( QBrush( QColor(80, 80, 80)) );
+    painter.setPen( Qt::NoPen );
+
+
     int nLayers = NNlayers.size();
     const int WIDTH = painter.device()->width();
     const int HEIGHT = painter.device()->height();
@@ -27,7 +35,11 @@ void DrawNN::paintEvent(QPaintEvent *)
         ellipse_size = std::max(std::min(1.0*HEIGHT/maxNeuronsPerLayer,
                                     1.0*WIDTH/NNlayers.size()), double(4.0));
         if(rect.size() >= 2){
-            painter.drawRect(rect[0], 0, std::max(ellipse_size, float(4.0)), HEIGHT);
+            painter.setPen( QPen(QColor(255, 80, 80), 2, Qt::SolidLine,Qt::SquareCap, Qt::RoundJoin));
+            painter.setBrush(Qt::NoBrush);
+            painter.drawRect(rect[0] + 1, 1, std::max(ellipse_size, float(4.0)), HEIGHT-2);
+            painter.setPen( Qt::NoPen );
+            painter.setBrush(QBrush( QColor(80, 80, 80)) );
         }
         //dy permet d'effectuer le décallage nécessaire pour centrer les layers dans le painter
         float dy = 0;
@@ -39,7 +51,7 @@ void DrawNN::paintEvent(QPaintEvent *)
             dy = (HEIGHT - NNlayers[i]*ellipse_size)/2;
             delimiters.push_back(((xSpace + ellipse_size)*i));
             for(int j = 0; j < NNlayers[i]; j++){
-                painter.drawEllipse(xSpace*i + i*ellipse_size, dy + j*ellipse_size, ellipse_size, ellipse_size);
+                painter.drawEllipse(1 + xSpace*i + i*ellipse_size, dy + j*ellipse_size, ellipse_size, ellipse_size);
                 if(i < nLayers - 1){
                     dyNext = (HEIGHT - NNlayers[i+1]*ellipse_size)/2;
                     for(int k = 0; k < NNlayers[i+1]; k++){

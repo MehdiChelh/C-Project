@@ -22,6 +22,8 @@
 #include <QTextEdit>
 #include <QColor>
 #include <QSyntaxHighlighter>
+#include <Python/Python.h>
+//#include "PythonQt3.1/src/PythonQt.h"
 #include "drawnn.h"
 
 class Tab1 : public QWidget

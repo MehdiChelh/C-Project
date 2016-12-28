@@ -111,18 +111,40 @@ void Tab1::DataPreprocessDialog()
                         "selection-background-color: rgb(233, 99, 0); "
                         "color:rgb(255,255,255) }");
     code->setTabStopWidth(20);
-    code->setText("def(data):\n\t#Your code\n\t#Data is a pandas dataframe\n\treturn data");
+    code->setText("def main(data):\n\t#Your code\n\t#Data is a pandas dataframe\n\treturn data");
     MyHighlighter *highlighter = new MyHighlighter(code->document());
-    grid -> addWidget(code);
+    grid -> addWidget(code, 0, 0, 1, 2);
+
+    QPushButton *run_code_btn = new QPushButton("Run", dialog);
+    run_code_btn->setCursor(Qt::PointingHandCursor);
+    grid->addWidget(run_code_btn, 1, 1);
+
+    QPushButton *save_code_btn = new QPushButton("Enregistrer", dialog);
+    save_code_btn->setCursor(Qt::PointingHandCursor);
+    grid->addWidget(save_code_btn, 1, 0);
+
+
     dialog->show();
+    /*Py_Initialize();
+    PyObject *pModule = PyImport_AddModule("__main__");
+    PyRun_SimpleString("from time import time,ctime\n"
+                       "print('Today is', ctime(time()))\n");
+    Py_Finalize();
+
+
+    PythonQt::init();
+    PythonQtObjectPtr mainModule =
+                      PythonQt::self()->getMainModule();
+    QVariant result = mainModule.evalScript(
+                    mainModule, "19*2+4", Py_eval_input);
+    qDebug() << result;*/
 }
 
 MyHighlighter::MyHighlighter(QTextDocument *parent): QSyntaxHighlighter(parent)
 {
     HighlightingRule rule;
 
-    QColor color(250,0,0);
-    keywordFormat.setForeground(QBrush(QColor(247,89,197)));
+    keywordFormat.setForeground(QBrush(QColor(249, 135, 255)));
     keywordFormat.setFontWeight(QFont::Bold);
     QStringList keywordPatterns;
     keywordPatterns << "\\bimport\\b" << "\\bdef\\b"
