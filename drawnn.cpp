@@ -35,9 +35,11 @@ void DrawNN::paintEvent(QPaintEvent *)
         ellipse_size = std::max(std::min(1.0*HEIGHT/maxNeuronsPerLayer,
                                     1.0*WIDTH/NNlayers.size()), double(4.0));
         if(rect.size() >= 2){
-            painter.setPen( QPen(QColor(255, 80, 80), 2, Qt::SolidLine,Qt::SquareCap, Qt::RoundJoin));
+            float border_width = 5;
+            painter.setPen( QPen(QColor(255, 80, 80), border_width, Qt::SolidLine,Qt::SquareCap, Qt::RoundJoin));
             painter.setBrush(Qt::NoBrush);
-            painter.drawRect(rect[0] + 1, 1, std::max(ellipse_size, float(4.0)), HEIGHT-2);
+            painter.drawRect(rect[0] + border_width/2,
+                    border_width/2, std::max(ellipse_size, float(4.0)) - border_width , HEIGHT-border_width +1);
             painter.setPen( Qt::NoPen );
             painter.setBrush(QBrush( QColor(80, 80, 80)) );
         }
@@ -51,7 +53,7 @@ void DrawNN::paintEvent(QPaintEvent *)
             dy = (HEIGHT - NNlayers[i]*ellipse_size)/2;
             delimiters.push_back(((xSpace + ellipse_size)*i));
             for(int j = 0; j < NNlayers[i]; j++){
-                painter.drawEllipse(1 + xSpace*i + i*ellipse_size, dy + j*ellipse_size, ellipse_size, ellipse_size);
+                painter.drawEllipse(xSpace*i + i*ellipse_size, dy + j*ellipse_size, ellipse_size, ellipse_size);
                 if(i < nLayers - 1){
                     dyNext = (HEIGHT - NNlayers[i+1]*ellipse_size)/2;
                     for(int k = 0; k < NNlayers[i+1]; k++){

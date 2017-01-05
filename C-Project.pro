@@ -15,3 +15,5 @@ HEADERS += \
     tab1.h \
     tab2.h \
     drawnn.h
+
+unix|win32: LIBS += -lcurl.4

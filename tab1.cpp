@@ -104,24 +104,30 @@ void Tab1::DataPreprocessDialog()
     dialog->setWindowTitle(QString("Python code editor for data preprocessing "));
     QGridLayout *grid = new QGridLayout();
     dialog->setLayout(grid);
-    dialog -> resize(500, 500*9/16);
+    dialog -> resize(700, 700*9/16);
 
     QTextEdit *code = new QTextEdit(dialog);
     code->setStyleSheet("QTextEdit { background: rgb(60, 60, 60); "
                         "selection-background-color: rgb(233, 99, 0); "
                         "color:rgb(255,255,255) }");
     code->setTabStopWidth(20);
-    code->setText("def main(data):\n\t#Your code\n\t#Data is a pandas dataframe\n\treturn data");
+    code->setText("import pandas\n"
+                  "data = pandas.read_csv('path_to_file')\n\n"
+                  "def main(data):\n\t#Your code\n\t#Data is a pandas dataframe\n\treturn data");
     MyHighlighter *highlighter = new MyHighlighter(code->document());
     grid -> addWidget(code, 0, 0, 1, 2);
 
+    QTextEdit *console = new QTextEdit(dialog);
+    console -> setReadOnly(true);
+    grid -> addWidget(console, 1, 0, 1, 2);
+
     QPushButton *run_code_btn = new QPushButton("Run", dialog);
     run_code_btn->setCursor(Qt::PointingHandCursor);
-    grid->addWidget(run_code_btn, 1, 1);
+    grid->addWidget(run_code_btn, 2, 1);
 
     QPushButton *save_code_btn = new QPushButton("Enregistrer", dialog);
     save_code_btn->setCursor(Qt::PointingHandCursor);
-    grid->addWidget(save_code_btn, 1, 0);
+    grid->addWidget(save_code_btn, 2, 0);
 
 
     dialog->show();
