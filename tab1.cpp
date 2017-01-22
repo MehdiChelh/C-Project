@@ -2,30 +2,40 @@
 
 Tab1::Tab1() : QWidget()
 {
-    grid = new QGridLayout();
+    grid = new QGridLayout(this);
     this->setLayout(grid);
 
     //Widget contenant le painter affichant le NN
     paintWidget = new DrawNN(this);
     grid -> addWidget(paintWidget, 1, 0, 1, 6);
 
+
+    // Juste pour le design de la section de selection des données
+    QGroupBox *data_selection_groupbox = new QGroupBox(this);
+    data_selection_groupbox->setTitle(QString("Selection des données"));
+    //data_selection_groupbox->setStyleSheet("font-size: 18px");
+    grid -> addWidget(data_selection_groupbox, 0, 0, 1, 2);
+
+    QHBoxLayout *data_selection_layout = new QHBoxLayout(data_selection_groupbox);
+    data_selection_groupbox->setLayout(data_selection_layout);
+
     //Bouton pour ouvrir la boite de dialogue pour charger les données
-    load_data_button = new QPushButton("Load external data");
+    load_data_button = new QPushButton("Load external data", data_selection_groupbox);
     load_data_button -> setCursor(Qt::PointingHandCursor);
     QObject::connect(load_data_button, SIGNAL(clicked()), this, SLOT(loadData()));
-    grid -> addWidget(load_data_button, 0, 0);
+    data_selection_layout -> addWidget(load_data_button);
 
-    QPushButton *select_data_button = new QPushButton("Select data");
+    QPushButton *select_data_button = new QPushButton("Select data", data_selection_groupbox);
     select_data_button -> setCursor(Qt::PointingHandCursor);
     QObject::connect(select_data_button, SIGNAL(clicked()), this, SLOT(selectData()));
-    grid -> addWidget(select_data_button, 0, 1);
+    data_selection_layout -> addWidget(select_data_button);
 
     QLabel *labelNeurons = new QLabel(this);
     labelNeurons->setText("Ajouter une couche :");
     grid->addWidget(labelNeurons, 0,2);
 
     //Bouton pour ajouter une couche au NN
-    add_layer_button = new QPushButton("+");
+    add_layer_button = new QPushButton("+", this);
     add_layer_button -> setCursor(Qt::PointingHandCursor);
     QObject::connect(add_layer_button, SIGNAL(clicked()), paintWidget, SLOT(addLayer()));
     QObject::connect(add_layer_button, SIGNAL(clicked()), this, SLOT(enablingDisablingButtons()));
@@ -85,17 +95,75 @@ void Tab1::loadData()
 
 void Tab1::selectData()
 {
-    QStringList items;
-    items << tr("Sélectionner les données") << tr("---Financières---") << tr("AAPL") << tr("GOOGL") << tr("---Météorologiques---") << tr("Paris");
-    QStringList forbiddenItems;
-    forbiddenItems << tr("Sélectionner les données") << tr("---Financières---") << tr("---Météorologiques---") ;
-    bool ok;
-    QString item = QInputDialog::getItem(this, tr("Train data"),
-                                         tr("Jeux de données à mettre en entrée \n "
-                                            "pour la phase d'apprentissage :"),
-                                         items, 0, false, &ok);
-    if (ok && !item.isEmpty() && !forbiddenItems.contains(item))
-        labelForDebug->setText(item);
+//    QStringList items;
+//    items << tr("Sélectionner le type de données") << tr("Financières avec l'API Quandl") << tr("NOAA");
+    QDialog *dialog = new QDialog();
+    dialog->setWindowTitle(QString("Selection les données"));
+    QHBoxLayout *grid = new QHBoxLayout();
+    dialog->setAttribute(Qt::WA_DeleteOnClose);
+    dialog->setLayout(grid);
+
+    QPushButton *NOAA = new QPushButton("Données météo", dialog);
+    grid ->addWidget(NOAA);
+
+    QPushButton *quandl = new QPushButton("Données provenant de Quandl", dialog);
+    QObject::connect(quandl, SIGNAL(clicked()), this, SLOT(QuandlDialog()));
+    QObject::connect(quandl, SIGNAL(clicked()), dialog, SLOT(close()));
+    grid ->addWidget(quandl);
+
+    dialog->show();
+}
+
+void Tab1::QuandlDialog()
+{
+    struct search {
+        static void get()
+        {
+            qDebug() << "nto";
+        }
+    };
+
+    QDialog *dialog = new QDialog();
+    dialog->setWindowTitle(QString("Selection des données provenant de Quandl"));
+    QGridLayout *grid = new QGridLayout();
+    dialog->setLayout(grid);
+
+    QLineEdit *quandlSearch = new QLineEdit(dialog);
+    quandlSearch->setPlaceholderText("");
+    grid->addWidget(quandlSearch, 0,0);
+
+    QPushButton *search_button = new QPushButton(dialog);
+    search_button->setText(QString("Rechercher"));
+    search_button->setCursor(Qt::PointingHandCursor);
+//    QObject::connect(search_button, SIGNAL(clicked()), this, SLOT(search::get()));
+    grid->addWidget(search_button, 0, 1);
+
+    QListWidget *listWidget = new QListWidget(dialog);
+
+    new QListWidgetItem(tr("Oak"), listWidget);
+    new QListWidgetItem(tr("Fir"), listWidget);
+    new QListWidgetItem(tr("Pine"), listWidget);
+
+    grid->addWidget(listWidget, 1, 0, 1, 2);
+
+//    CURL *curl;
+//    CURLcode res;
+
+//    curl = curl_easy_init();
+//    if(curl) {
+//        curl_easy_setopt(curl, CURLOPT_URL, "https://www.quandl.com/api/v3/databases.csv?api_key=kuExaMxAa629HY7dRvgH");
+
+//        curl_easy_setopt(curl, CURLOPT_FOLLOWLOCATION, 1L);
+
+//        res = curl_easy_perform(curl);
+//        if(res != CURLE_OK)
+//            fprintf(stderr, "curl_easy_perform() failed: %s\n",
+//                    curl_easy_strerror(res));
+
+//        curl_easy_cleanup(curl);
+//    }
+
+    dialog->show();
 }
 
 void Tab1::DataPreprocessDialog()
@@ -111,9 +179,10 @@ void Tab1::DataPreprocessDialog()
                         "selection-background-color: rgb(233, 99, 0); "
                         "color:rgb(255,255,255) }");
     code->setTabStopWidth(20);
-    code->setText("import pandas\n"
-                  "data = pandas.read_csv('path_to_file')\n\n"
-                  "def main(data):\n\t#Your code\n\t#Data is a pandas dataframe\n\treturn data");
+    code->setText("import pandas\n\n"
+                  "def main(data):\n\t#Your code\n\t#Data is a pandas dataframe\n"
+                  "\tdata.to_csv(new_file_name, sep=\"\\t\")\n\n"
+                  "main(pandas.read_csv(file_name))");
     MyHighlighter *highlighter = new MyHighlighter(code->document());
     grid -> addWidget(code, 0, 0, 1, 2);
 

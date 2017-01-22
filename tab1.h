@@ -22,6 +22,9 @@
 #include <QTextEdit>
 #include <QColor>
 #include <QSyntaxHighlighter>
+#include <QGroupBox>
+#include <QListWidget>
+#include <curl/curl.h>
 #include <Python/Python.h>
 //#include "PythonQt3.1/src/PythonQt.h"
 #include "drawnn.h"
@@ -39,6 +42,7 @@ public slots:
     void enablingDisablingButtons();
     void seeData();
     void DataPreprocessDialog();
+    void QuandlDialog();
 private:
     QGridLayout *grid;
     QPushButton *load_data_button;
