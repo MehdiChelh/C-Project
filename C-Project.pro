@@ -8,12 +8,18 @@ SOURCES += \
     window.cpp \
     tab1.cpp \
     tab2.cpp \
-    drawnn.cpp
+    drawnn.cpp \
+    quandlsearch.cpp \
+    data.cpp \
+    quandldata.cpp
 
 HEADERS += \
     window.h \
     tab1.h \
     tab2.h \
-    drawnn.h
+    drawnn.h \
+    quandlsearch.h \
+    data.h \
+    quandldata.h
 
 unix|win32: LIBS += -lcurl.4

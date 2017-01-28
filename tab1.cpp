@@ -2,6 +2,8 @@
 
 Tab1::Tab1() : QWidget()
 {
+    data = new Data();
+
     grid = new QGridLayout(this);
     this->setLayout(grid);
 
@@ -87,9 +89,38 @@ void Tab1::enablingDisablingButtons(){
 }
 void Tab1::loadData()
 {
-    data = QFileDialog::getOpenFileName(this, "Ouvrir un fichier", QString(), "*.csv");
-    if(data != ""){
-        QMessageBox::information(this, "Fichier", "Vous avez sélectionné :\n" + data);
+
+    pathToCSV = QFileDialog::getOpenFileName(this, "Ouvrir un fichier", QString(), "*.csv");
+    if(pathToCSV != ""){
+        QMessageBox::information(this, "Fichier", "Vous avez sélectionné :\n" + pathToCSV.split("/").last());
+        data->openCSV(pathToCSV);
+//        QFile file(pathToCSV);
+//        if (!file.open(QIODevice::ReadOnly)) {
+//            qDebug() << file.errorString();
+//        }
+
+//        QStringList wordList;
+//        QList<QByteArray> lines = file.readAll().split('\n');
+//        //On stock l'entête dans entete :
+//        QList<QByteArray> entete = lines[0].split('\t');
+//        qDebug() << entete;
+//        //On commence à 1 pour ne pas prendre en compte l'entête
+//        for(int i = 1; i < lines.length(); i++){
+//            QList<QByteArray> liste = lines[i].split(',');
+//            for(int e = 0; e < liste.length(); e++){
+//                if(liste[e] != ""){
+//                    QString datemax = "1980-12-12";
+//                    QString datemin = "1980-12-12";
+//                    if((e == 1) && Data::isInferior(liste[0], datemax) && Data::isInferior(datemin, liste[0])){
+//                        qDebug() << liste[0] << liste[e].toDouble();
+//                        qDebug() << "\n\n";
+//                    }
+//                }
+//            }
+//        }
+//                wordList.append(liste);
+
+//            qDebug() << wordList;
     }
 }
 
@@ -116,54 +147,8 @@ void Tab1::selectData()
 
 void Tab1::QuandlDialog()
 {
-    struct search {
-        static void get()
-        {
-            qDebug() << "nto";
-        }
-    };
-
-    QDialog *dialog = new QDialog();
-    dialog->setWindowTitle(QString("Selection des données provenant de Quandl"));
-    QGridLayout *grid = new QGridLayout();
-    dialog->setLayout(grid);
-
-    QLineEdit *quandlSearch = new QLineEdit(dialog);
-    quandlSearch->setPlaceholderText("");
-    grid->addWidget(quandlSearch, 0,0);
-
-    QPushButton *search_button = new QPushButton(dialog);
-    search_button->setText(QString("Rechercher"));
-    search_button->setCursor(Qt::PointingHandCursor);
-//    QObject::connect(search_button, SIGNAL(clicked()), this, SLOT(search::get()));
-    grid->addWidget(search_button, 0, 1);
-
-    QListWidget *listWidget = new QListWidget(dialog);
-
-    new QListWidgetItem(tr("Oak"), listWidget);
-    new QListWidgetItem(tr("Fir"), listWidget);
-    new QListWidgetItem(tr("Pine"), listWidget);
-
-    grid->addWidget(listWidget, 1, 0, 1, 2);
-
-//    CURL *curl;
-//    CURLcode res;
-
-//    curl = curl_easy_init();
-//    if(curl) {
-//        curl_easy_setopt(curl, CURLOPT_URL, "https://www.quandl.com/api/v3/databases.csv?api_key=kuExaMxAa629HY7dRvgH");
-
-//        curl_easy_setopt(curl, CURLOPT_FOLLOWLOCATION, 1L);
-
-//        res = curl_easy_perform(curl);
-//        if(res != CURLE_OK)
-//            fprintf(stderr, "curl_easy_perform() failed: %s\n",
-//                    curl_easy_strerror(res));
-
-//        curl_easy_cleanup(curl);
-//    }
-
-    dialog->show();
+    QuandlSearch* quandlDialog = new QuandlSearch();
+    quandlDialog->show();
 }
 
 void Tab1::DataPreprocessDialog()
@@ -282,8 +267,28 @@ void Tab1::seeData()
     QGridLayout *grid = new QGridLayout();
     dialog->setLayout(grid);
     dialog -> resize(500, 500*9/16);
-    QTableWidget *table = new QTableWidget(30, 30, dialog);
+
+    QList<QByteArray> columns_name = data->getColumnsName();
+    if(columns_name.length() > 0)
+        columns_name.pop_front();//enleve la date
+//    QList<QByteArray> date = data->getDate();
+    std::vector<std::vector <double>> input = data->getInput();
+    int cols = fmax(columns_name.length(), 1);
+    int rows = fmax(input.size(), 1);
+
+    QTableWidget *table = new QTableWidget(rows, cols, dialog);
+
+    table->setItem(0, 0, new QTableWidgetItem("No data"));
     grid -> addWidget(table);
+    for(int i = 0; i < columns_name.length(); i ++)
+        table->setHorizontalHeaderItem(i, new QTableWidgetItem(QString(columns_name[i])));
+//    for(int i = 0; i < input[0].size(); i ++)
+//        table->setVerticalHeaderItem(i, new QTableWidgetItem(QString(date[i])));
+    for(int i = 0; i < input.size(); i++){
+        for(int j = 0; j < input[i].size(); j++){
+            table->setItem(i, j, new QTableWidgetItem(QString::number(input[i][j])));
+        }
+    }
     dialog->show();
 }
 
@@ -292,4 +297,5 @@ Tab1::~Tab1()
     delete grid;
     delete load_data_button;
     delete add_layer_button;
+    delete data;
 }

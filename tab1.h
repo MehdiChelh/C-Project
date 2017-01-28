@@ -28,6 +28,8 @@
 #include <Python/Python.h>
 //#include "PythonQt3.1/src/PythonQt.h"
 #include "drawnn.h"
+#include "quandlsearch.h"
+#include "data.h"
 
 class Tab1 : public QWidget
 {
@@ -51,7 +53,8 @@ private:
     QPushButton *learning_button;
     QLineEdit * inputFormNeurons;
     QLabel *labelForDebug;
-    QString data;
+    QString pathToCSV;
+    Data *data;
     DrawNN *paintWidget;
 };
 
