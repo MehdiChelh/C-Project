@@ -13,11 +13,11 @@ public:
     bool static isInferior(QString date1, QString date2);
     void openCSV(QString pathToCSV);
     QList<QByteArray> getColumnsName();
-//    QList<QByteArray> getDate();
+    QList<QByteArray> getDate();
     std::vector<std::vector <double>> getInput();
 private:
     QList<QByteArray> columns_name;
-//    QList<QByteArray> date;
+    QList<QByteArray> date;
     std::vector<std::vector <double>> input;
 };
 

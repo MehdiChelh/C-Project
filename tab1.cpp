@@ -147,7 +147,7 @@ void Tab1::selectData()
 
 void Tab1::QuandlDialog()
 {
-    QuandlSearch* quandlDialog = new QuandlSearch();
+    class QuandlDialog* quandlDialog = new class QuandlDialog();
     quandlDialog->show();
 }
 

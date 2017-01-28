@@ -13,7 +13,7 @@ Window::Window() : QTabWidget()
     this->addTab(tab1, label);
 
     tab2 = new Tab2();
-    const QString label2 ="Predict";
+    const QString label2 ="Test";
     this->addTab(tab2, label2);
 
 }

@@ -1,5 +1,5 @@
-#ifndef QUANDLSEARCH_H
-#define QUANDLSEARCH_H
+#ifndef QUANDLDIALOG_H
+#define QUANDLDIALOG_H
 
 
 #include <QApplication>
@@ -15,18 +15,22 @@
 #include <QJsonValue>
 #include <curl/curl.h>
 #include <QDebug>
+#include "quandlsearch.h"
 
-class QuandlSearch : public QDialog
+class QuandlDialog : public QDialog
 {
     Q_OBJECT
 public:
-    QuandlSearch(QLineEdit*, QTreeWidget*);
-    ~QuandlSearch();
+    QuandlDialog();
+    ~QuandlDialog();
 public slots:
-    void searchResponse();
-    void selectItem();
+    void disableButtons();
 private:
+    QGridLayout *grid;
     QLineEdit* searchKeywords;
     QTreeWidget* listWidget;
+    QPushButton *select_dataset;
+    QPushButton *search_button;
+    QuandlSearch *search;
 };
-#endif // QUANDLSEARCH_H
+#endif // QUANDLDIALOG_H

@@ -11,7 +11,8 @@ SOURCES += \
     drawnn.cpp \
     quandlsearch.cpp \
     data.cpp \
-    quandldata.cpp
+    quandldata.cpp \
+    quandldialog.cpp
 
 HEADERS += \
     window.h \
@@ -20,6 +21,7 @@ HEADERS += \
     drawnn.h \
     quandlsearch.h \
     data.h \
-    quandldata.h
+    quandldata.h \
+    quandldialog.h
 
 unix|win32: LIBS += -lcurl.4

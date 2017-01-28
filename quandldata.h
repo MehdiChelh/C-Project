@@ -10,9 +10,6 @@ class QuandlData: public Data
 {
 public:
     QuandlData();
-//    QList<QByteArray> getDate();
-//private:
-//    QList<QByteArray> date;
 };
 
 #endif // QUANDLDATA_H

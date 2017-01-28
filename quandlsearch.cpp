@@ -1,33 +1,9 @@
 #include "quandlsearch.h"
 
-QuandlSearch::QuandlSearch() : QDialog()
+QuandlSearch::QuandlSearch(QLineEdit* _searchKeywords, QTreeWidget* _listWidget) : QDialog()
 {
-    this->setWindowTitle(QString("Selection des données provenant de Quandl"));
-    grid = new QGridLayout();
-    this->setLayout(grid);
-
-    searchKeywords = new QLineEdit(this);
-    searchKeywords -> setPlaceholderText("");
-    grid->addWidget(searchKeywords, 0,0);
-
-    search_button = new QPushButton(this);
-    search_button->setText(QString("Rechercher"));
-    search_button->setCursor(Qt::PointingHandCursor);
-//    QObject::connect(search_button, SIGNAL(clicked()), this, SLOT(disableButtons()));
-    QObject::connect(search_button, SIGNAL(clicked()), this, SLOT(searchResponse()));
-    grid->addWidget(search_button, 0, 1);
-
-    listWidget = new QTreeWidget(this);
-    listWidget->resize(500, 200);
-    grid->addWidget(listWidget, 1, 0, 1, 2);
-
-    select_dataset = new QPushButton(this);
-    select_dataset->setText("Selectionner");
-    select_dataset->setCursor(Qt::PointingHandCursor);
-    QObject::connect(select_dataset, SIGNAL(clicked()), this, SLOT(selectItem()));
-    grid->addWidget(select_dataset, 2, 0, 1, 2);
-
-    this->show();
+    searchKeywords = _searchKeywords;
+    listWidget = _listWidget;
 }
 
 //Sert a extraire les données renvoyer par l'appel à libcurl
@@ -116,14 +92,8 @@ void QuandlSearch::selectItem()
 
 }
 
-void QuandlSearch::disableButtons()
-{
-    select_dataset->setDisabled(true);
-    search_button->setDisabled(true);
-}
 
 QuandlSearch::~QuandlSearch()
 {
     delete listWidget;
-    delete grid;
 }

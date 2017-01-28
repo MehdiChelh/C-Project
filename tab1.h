@@ -29,6 +29,7 @@
 //#include "PythonQt3.1/src/PythonQt.h"
 #include "drawnn.h"
 #include "quandlsearch.h"
+#include "quandldialog.h"
 #include "data.h"
 
 class Tab1 : public QWidget
