@@ -23,12 +23,11 @@ QuandlDialog::QuandlDialog() : QDialog()
     select_dataset = new QPushButton(this);
     select_dataset->setText("Selectionner");
     select_dataset->setCursor(Qt::PointingHandCursor);
-    QObject::connect(select_dataset, SIGNAL(clicked()), this, SLOT(selectItem()));
     grid->addWidget(select_dataset, 2, 0, 1, 2);
 
     search = new QuandlSearch(searchKeywords, listWidget);
     QObject::connect(search_button, SIGNAL(clicked()), search, SLOT(searchResponse()));
-    QObject::connect(select_dataset, SIGNAL(clicked()), this, SLOT(selectItem()));
+    QObject::connect(select_dataset, SIGNAL(clicked()), search, SLOT(selectItem()));
 
     this->show();
 }

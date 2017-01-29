@@ -4,7 +4,7 @@
 
 Window::Window() : QTabWidget()
 {
-    const int width = 800;
+    const int width = 900;
     const int height = width*9/16;
     resize(width, height);
 

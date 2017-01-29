@@ -62,9 +62,9 @@ QList<QByteArray> Data::getColumnsName(){
     return columns_name;
 }
 
-//QList<QByteArray> Data::getDate(){
-//    return date;
-//}
+QList<QByteArray> Data::getDate(){
+    return date;
+}
 
 std::vector<std::vector <double>> Data::getInput(){
     return input;

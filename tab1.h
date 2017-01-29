@@ -31,6 +31,8 @@
 #include "quandlsearch.h"
 #include "quandldialog.h"
 #include "data.h"
+#include "tablewidget.h"
+#include "preprocdialog.h"
 
 class Tab1 : public QWidget
 {
@@ -43,7 +45,6 @@ public slots:
     void loadData();
     void selectData();
     void enablingDisablingButtons();
-    void seeData();
     void DataPreprocessDialog();
     void QuandlDialog();
 private:
@@ -57,26 +58,10 @@ private:
     QString pathToCSV;
     Data *data;
     DrawNN *paintWidget;
+    TableWidget *table;
 };
 
 
-class MyHighlighter : public QSyntaxHighlighter
-{
-    Q_OBJECT
-public:
-    MyHighlighter(QTextDocument * parent);
-    void highlightBlock(const QString &text);
-private:
-    struct HighlightingRule
-    {
-        QRegExp pattern;
-        QTextCharFormat format;
-    };
-    QVector<HighlightingRule> highlightingRules;
-    QTextCharFormat keywordFormat;
-    QTextCharFormat quotationFormat;
-    QTextCharFormat functionFormat;
-    QTextCharFormat singleLineCommentFormat;
-};
+
 
 #endif // TAB1_H

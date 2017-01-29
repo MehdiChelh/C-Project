@@ -11,19 +11,19 @@ DrawNN::DrawNN(QWidget *parent) : QWidget(parent)
 void DrawNN::paintEvent(QPaintEvent *)
 {
     QPainter painter(this);
-    painter.setRenderHint(QPainter::Antialiasing);
-    painter.setBackground(QBrush(QColor(249, 135, 255)));
-    painter.setBrush( QBrush( QColor(80, 80, 80)) );
-    painter.setPen( Qt::NoPen );
-
-
     int nLayers = NNlayers.size();
     const int WIDTH = painter.device()->width();
     const int HEIGHT = painter.device()->height();
-    //maxNeuronsPerLayer représente le nombre maximum de neurones par layers
 
-    if(nLayers > 0)
+    if(nLayers == 0)
     {
+        painter.drawText(WIDTH/2 - 155, HEIGHT/2 - 5, QString("Il faut donner une topologie au réseau de neurones."));
+    }
+    else{
+        painter.setRenderHint(QPainter::Antialiasing);
+        painter.setBackground(QBrush(QColor(249, 135, 255)));
+        painter.setBrush( QBrush( QColor(80, 80, 80)) );
+        painter.setPen( Qt::NoPen );
         int maxNeuronsPerLayer = 0;
         for(int i = 0; i < nLayers; i++){
             if(NNlayers[i] > maxNeuronsPerLayer)

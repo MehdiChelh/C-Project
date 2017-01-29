@@ -7,10 +7,10 @@ Tab1::Tab1() : QWidget()
     grid = new QGridLayout(this);
     this->setLayout(grid);
 
-    //Widget contenant le painter affichant le NN
-    paintWidget = new DrawNN(this);
-    grid -> addWidget(paintWidget, 1, 0, 1, 6);
 
+    //Widget permettant d'afficher les données
+    table = new TableWidget(data, this);
+    grid -> addWidget(table, 1, 0, 1, 2);
 
     // Juste pour le design de la section de selection des données
     QGroupBox *data_selection_groupbox = new QGroupBox(this);
@@ -32,9 +32,32 @@ Tab1::Tab1() : QWidget()
     QObject::connect(select_data_button, SIGNAL(clicked()), this, SLOT(selectData()));
     data_selection_layout -> addWidget(select_data_button);
 
+
+
+
+    //Widget contenant le painter affichant le NN
+    paintWidget = new DrawNN(this);
+    grid -> addWidget(paintWidget, 1, 2, 1, 4);
+
+    QGroupBox *manage_layers = new QGroupBox(this);
+    manage_layers->setTitle(QString("Ajouter/supprimer des couches du réseau de neurones"));
+    //data_selection_groupbox->setStyleSheet("font-size: 18px");
+    grid -> addWidget(manage_layers, 0, 2, 1, 4);
+
+    QHBoxLayout *manage_layers_layout = new QHBoxLayout(manage_layers);
+    manage_layers->setLayout(manage_layers_layout);
+
     QLabel *labelNeurons = new QLabel(this);
     labelNeurons->setText("Ajouter une couche :");
-    grid->addWidget(labelNeurons, 0,2);
+    manage_layers_layout->addWidget(labelNeurons);
+
+
+    //Input pour le nombre de neurones du NN à ajouter
+    inputFormNeurons = new QLineEdit(this);
+    inputFormNeurons->setPlaceholderText("Nombre de neurones");
+    inputFormNeurons->setValidator(new QIntValidator(inputFormNeurons));
+    QObject::connect(inputFormNeurons, SIGNAL(textChanged(QString)), paintWidget, SLOT(getNumberOfNeurons(QString)));
+    manage_layers_layout -> addWidget(inputFormNeurons);
 
     //Bouton pour ajouter une couche au NN
     add_layer_button = new QPushButton("+", this);
@@ -42,15 +65,9 @@ Tab1::Tab1() : QWidget()
     QObject::connect(add_layer_button, SIGNAL(clicked()), paintWidget, SLOT(addLayer()));
     QObject::connect(add_layer_button, SIGNAL(clicked()), this, SLOT(enablingDisablingButtons()));
     QObject::connect(add_layer_button, SIGNAL(clicked()), this, SLOT(resetInputFormNeurons()));
-    grid -> addWidget(add_layer_button, 0, 4);
+    manage_layers_layout -> addWidget(add_layer_button);
 
-    //Input pour le nombre de neurones du NN à ajouter
-    inputFormNeurons = new QLineEdit(this);
-    inputFormNeurons->setPlaceholderText("");
-    inputFormNeurons->setValidator(new QIntValidator(inputFormNeurons));
-    QObject::connect(inputFormNeurons, SIGNAL(textChanged(QString)), paintWidget, SLOT(getNumberOfNeurons(QString)));
     QObject::connect(inputFormNeurons, SIGNAL(returnPressed()), add_layer_button, SIGNAL(clicked()));
-    grid -> addWidget(inputFormNeurons, 0,3);
 
     //Bouton pour supprimer la dernière couche du NN
     pop_layer_button = new QPushButton("Supprimer le dernier layer");
@@ -59,19 +76,16 @@ Tab1::Tab1() : QWidget()
     qDebug() << paintWidget->getNNlayers().size();
     QObject::connect(pop_layer_button, SIGNAL(clicked()), paintWidget, SLOT(popLayer()));
     QObject::connect(pop_layer_button, SIGNAL(clicked()), this, SLOT(enablingDisablingButtons()));
-    grid -> addWidget(pop_layer_button, 0, 5);
+    manage_layers_layout -> addWidget(pop_layer_button);
 
-    //Bouton pour visualiser les données
+
+
+    //Bouton pour faire un prétraitement des données
     QPushButton *data_preprocess_button = new QPushButton("Data preprocessing");
     data_preprocess_button -> setCursor(Qt::PointingHandCursor);
     QObject::connect(data_preprocess_button, SIGNAL(clicked()), this, SLOT(DataPreprocessDialog()));
     grid -> addWidget(data_preprocess_button, 2, 0);
 
-    //Bouton pour visualiser les données
-    QPushButton *see_data_button = new QPushButton("Visualiser les données");
-    see_data_button -> setCursor(Qt::PointingHandCursor);
-    QObject::connect(see_data_button, SIGNAL(clicked()), this, SLOT(seeData()));
-    grid -> addWidget(see_data_button, 2, 1);
 
     //Bouton qui lance le learning
     learning_button = new QPushButton("Entrainer le réseau");
@@ -94,33 +108,7 @@ void Tab1::loadData()
     if(pathToCSV != ""){
         QMessageBox::information(this, "Fichier", "Vous avez sélectionné :\n" + pathToCSV.split("/").last());
         data->openCSV(pathToCSV);
-//        QFile file(pathToCSV);
-//        if (!file.open(QIODevice::ReadOnly)) {
-//            qDebug() << file.errorString();
-//        }
-
-//        QStringList wordList;
-//        QList<QByteArray> lines = file.readAll().split('\n');
-//        //On stock l'entête dans entete :
-//        QList<QByteArray> entete = lines[0].split('\t');
-//        qDebug() << entete;
-//        //On commence à 1 pour ne pas prendre en compte l'entête
-//        for(int i = 1; i < lines.length(); i++){
-//            QList<QByteArray> liste = lines[i].split(',');
-//            for(int e = 0; e < liste.length(); e++){
-//                if(liste[e] != ""){
-//                    QString datemax = "1980-12-12";
-//                    QString datemin = "1980-12-12";
-//                    if((e == 1) && Data::isInferior(liste[0], datemax) && Data::isInferior(datemin, liste[0])){
-//                        qDebug() << liste[0] << liste[e].toDouble();
-//                        qDebug() << "\n\n";
-//                    }
-//                }
-//            }
-//        }
-//                wordList.append(liste);
-
-//            qDebug() << wordList;
+        table->fill(data);
     }
 }
 
@@ -153,38 +141,10 @@ void Tab1::QuandlDialog()
 
 void Tab1::DataPreprocessDialog()
 {
-    QDialog *dialog = new QDialog();
-    dialog->setWindowTitle(QString("Python code editor for data preprocessing "));
-    QGridLayout *grid = new QGridLayout();
-    dialog->setLayout(grid);
-    dialog -> resize(700, 700*9/16);
-
-    QTextEdit *code = new QTextEdit(dialog);
-    code->setStyleSheet("QTextEdit { background: rgb(60, 60, 60); "
-                        "selection-background-color: rgb(233, 99, 0); "
-                        "color:rgb(255,255,255) }");
-    code->setTabStopWidth(20);
-    code->setText("import pandas\n\n"
-                  "def main(data):\n\t#Your code\n\t#Data is a pandas dataframe\n"
-                  "\tdata.to_csv(new_file_name, sep=\"\\t\")\n\n"
-                  "main(pandas.read_csv(file_name))");
-    MyHighlighter *highlighter = new MyHighlighter(code->document());
-    grid -> addWidget(code, 0, 0, 1, 2);
-
-    QTextEdit *console = new QTextEdit(dialog);
-    console -> setReadOnly(true);
-    grid -> addWidget(console, 1, 0, 1, 2);
-
-    QPushButton *run_code_btn = new QPushButton("Run", dialog);
-    run_code_btn->setCursor(Qt::PointingHandCursor);
-    grid->addWidget(run_code_btn, 2, 1);
-
-    QPushButton *save_code_btn = new QPushButton("Enregistrer", dialog);
-    save_code_btn->setCursor(Qt::PointingHandCursor);
-    grid->addWidget(save_code_btn, 2, 0);
-
-
+    PreprocDialog* dialog = new PreprocDialog();
     dialog->show();
+
+
     /*Py_Initialize();
     PyObject *pModule = PyImport_AddModule("__main__");
     PyRun_SimpleString("from time import time,ctime\n"
@@ -200,97 +160,7 @@ void Tab1::DataPreprocessDialog()
     qDebug() << result;*/
 }
 
-MyHighlighter::MyHighlighter(QTextDocument *parent): QSyntaxHighlighter(parent)
-{
-    HighlightingRule rule;
 
-    keywordFormat.setForeground(QBrush(QColor(249, 135, 255)));
-    keywordFormat.setFontWeight(QFont::Bold);
-    QStringList keywordPatterns;
-    keywordPatterns << "\\bimport\\b" << "\\bdef\\b"
-                    << "\\bfrom\\b" << "\\breturn\\b";
-    foreach (const QString &pattern, keywordPatterns) {
-        rule.pattern = QRegExp(pattern);
-        rule.format = keywordFormat;
-        highlightingRules.append(rule);
-    }
-
-    quotationFormat.setForeground(QBrush(QColor(57,247,117)));
-    rule.pattern = QRegExp("\".*\"");
-    rule.format = quotationFormat;
-    highlightingRules.append(rule);
-
-    functionFormat.setFontItalic(true);
-    functionFormat.setForeground(QBrush(QColor(41,255,244)));
-    rule.pattern = QRegExp("\\b[A-Za-z0-9_]+(?=\\()");
-    rule.format = functionFormat;
-    highlightingRules.append(rule);
-
-    singleLineCommentFormat.setForeground(QBrush(QColor(200,200,200)));
-    rule.pattern = QRegExp("#[^\n]*");
-    rule.format = singleLineCommentFormat;
-    highlightingRules.append(rule);
-}
-void MyHighlighter::highlightBlock(const QString &text)
-{
-    QTextCharFormat myClassFormat;
-    myClassFormat.setFontWeight(QFont::Bold);
-    myClassFormat.setForeground(Qt::darkMagenta);
-    QString pattern = "\\bMy[A-Za-z]+\\b";
-
-
-    QRegExp expression(pattern);
-    int index = text.indexOf(expression);
-    while (index >= 0) {
-        int length = expression.matchedLength();
-        setFormat(index, length, myClassFormat);
-        index = text.indexOf(expression, index + length);
-    }
-
-
-    foreach (const HighlightingRule &rule, highlightingRules) {
-        QRegExp expression(rule.pattern);
-        int index = expression.indexIn(text);
-        while (index >= 0) {
-            int length = expression.matchedLength();
-            setFormat(index, length, rule.format);
-            index = expression.indexIn(text, index + length);
-        }
-    }
-}
-
-
-void Tab1::seeData()
-{
-    QDialog *dialog = new QDialog();
-    dialog->setWindowTitle(QString("Visualisation des données"));
-    QGridLayout *grid = new QGridLayout();
-    dialog->setLayout(grid);
-    dialog -> resize(500, 500*9/16);
-
-    QList<QByteArray> columns_name = data->getColumnsName();
-    if(columns_name.length() > 0)
-        columns_name.pop_front();//enleve la date
-//    QList<QByteArray> date = data->getDate();
-    std::vector<std::vector <double>> input = data->getInput();
-    int cols = fmax(columns_name.length(), 1);
-    int rows = fmax(input.size(), 1);
-
-    QTableWidget *table = new QTableWidget(rows, cols, dialog);
-
-    table->setItem(0, 0, new QTableWidgetItem("No data"));
-    grid -> addWidget(table);
-    for(int i = 0; i < columns_name.length(); i ++)
-        table->setHorizontalHeaderItem(i, new QTableWidgetItem(QString(columns_name[i])));
-//    for(int i = 0; i < input[0].size(); i ++)
-//        table->setVerticalHeaderItem(i, new QTableWidgetItem(QString(date[i])));
-    for(int i = 0; i < input.size(); i++){
-        for(int j = 0; j < input[i].size(); j++){
-            table->setItem(i, j, new QTableWidgetItem(QString::number(input[i][j])));
-        }
-    }
-    dialog->show();
-}
 
 Tab1::~Tab1()
 {

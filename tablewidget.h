@@ -1,11 +1,14 @@
 #ifndef TABLEWIDGET_H
 #define TABLEWIDGET_H
 
+#include <QTableWidget>
+#include "data.h"
 
-class tableWidget
+class TableWidget: public QTableWidget
 {
 public:
-    tableWidget();
+    TableWidget(Data* data, QWidget* parent);
+    void fill(Data* data);
 };
 
 #endif // TABLEWIDGET_H

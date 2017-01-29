@@ -12,7 +12,10 @@ SOURCES += \
     quandlsearch.cpp \
     data.cpp \
     quandldata.cpp \
-    quandldialog.cpp
+    quandldialog.cpp \
+#    preprocdialog.cpp \
+    tablewidget.cpp \
+    preprocdialog.cpp
 
 HEADERS += \
     window.h \
@@ -22,6 +25,9 @@ HEADERS += \
     quandlsearch.h \
     data.h \
     quandldata.h \
-    quandldialog.h
+    quandldialog.h \
+#    preprocdialog.h \
+    tablewidget.h \
+    preprocdialog.h
 
 unix|win32: LIBS += -lcurl.4
