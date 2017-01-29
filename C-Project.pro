@@ -15,7 +15,9 @@ SOURCES += \
     quandldialog.cpp \
 #    preprocdialog.cpp \
     tablewidget.cpp \
-    preprocdialog.cpp
+    preprocdialog.cpp \
+    neural_net.cpp \
+    traindialog.cpp
 
 HEADERS += \
     window.h \
@@ -28,6 +30,8 @@ HEADERS += \
     quandldialog.h \
 #    preprocdialog.h \
     tablewidget.h \
-    preprocdialog.h
+    preprocdialog.h \
+    neural_net.h \
+    traindialog.h
 
 unix|win32: LIBS += -lcurl.4

@@ -63,33 +63,34 @@ void QuandlSearch::searchResponse()
 
 void QuandlSearch::selectItem()
 {
-    qDebug() << (*(listWidget->currentItem())).text(1);
-    QString dataset_code = (*(listWidget->currentItem())).text(1);
-
+    //    qDebug() << (*(listWidget->currentItem())).text(1);
+    //    QString dataset_code = (*(listWidget->currentItem())).text(1);
+    QString dir = QFileDialog::getExistingDirectory(this, tr("Open Directory"),
+                                   "",
+                                   QFileDialog::ShowDirsOnly|QFileDialog::DontResolveSymlinks);
     CURL *curl;
-    CURLcode res;
-
     curl = curl_easy_init();
     if(curl) {
         qDebug() << "https://www.quandl.com/api/v3/datasets.json?query="+searchKeywords->text();
-        std::string url = std::string("https://www.quandl.com/api/v3/datasets/WIKI/")
-                                      + std::string(dataset_code.toUtf8().constData())
-                                      + std::string(".json?api_key=kuExaMxAa629HY7dRvgH");
-        curl_easy_setopt(curl, CURLOPT_URL, url.c_str());
-        curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, &writeCallback);
-        curl_easy_setopt(curl, CURLOPT_FOLLOWLOCATION, 1L);
+        std::string url = std::string("https://www.quandl.com/api/v3/datasets/WIKI/aapl")
+//                                      + std::string(dataset_code.toUtf8().constData())
+                                      + std::string(".csv?api_key=kuExaMxAa629HY7dRvgH");
 
-        res = curl_easy_perform(curl);
-        if(res != CURLE_OK)
-            fprintf(stderr, "curl_easy_perform() failed: %s\n",
-                    curl_easy_strerror(res));
-
-        curl_easy_cleanup(curl);
+        FILE *fp;
+        CURLcode res;
+        std::string filename = dir.toStdString() + "/appl.csv";
+        curl = curl_easy_init();
+        if (curl)
+        {
+            fp = fopen(filename.c_str(),"wb");
+            curl_easy_setopt(curl, CURLOPT_URL, url.c_str());
+            curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, NULL);
+            curl_easy_setopt(curl, CURLOPT_WRITEDATA, fp);
+            res = curl_easy_perform(curl);
+            curl_easy_cleanup(curl);
+            fclose(fp);
+        }
     }
-    QJsonDocument doc = QJsonDocument::fromJson(getResp.toUtf8());
-    qDebug() << doc.object();
-    getResp = "";
-
 }
 
 

@@ -15,6 +15,7 @@
 #include <QJsonValue>
 #include <curl/curl.h>
 #include <QDebug>
+#include <QFileDialog>
 
 class QuandlSearch : public QDialog
 {

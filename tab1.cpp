@@ -27,6 +27,10 @@ Tab1::Tab1() : QWidget()
     QObject::connect(load_data_button, SIGNAL(clicked()), this, SLOT(loadData()));
     data_selection_layout -> addWidget(load_data_button);
 
+    QLabel* orLabel = new QLabel(this);
+    orLabel->setText("or");
+    data_selection_layout->addWidget(orLabel);
+
     QPushButton *select_data_button = new QPushButton("Select data", data_selection_groupbox);
     select_data_button -> setCursor(Qt::PointingHandCursor);
     QObject::connect(select_data_button, SIGNAL(clicked()), this, SLOT(selectData()));
@@ -91,7 +95,9 @@ Tab1::Tab1() : QWidget()
     learning_button = new QPushButton("Entrainer le réseau");
     learning_button -> setCursor(Qt::PointingHandCursor);
     learning_button -> setDisabled(true);
-    QObject::connect(learning_button, SIGNAL(clicked()), qApp, SLOT(quit()));
+//    QObject::connect(learning_button, SIGNAL(clicked()), qApp, SLOT(quit()));
+    TrainDialog *tesst = new TrainDialog();
+    QObject::connect(learning_button, SIGNAL(clicked()), tesst, SLOT(Test()));
     grid -> addWidget(learning_button, 2, 5);
 }
 void Tab1::resetInputFormNeurons(){

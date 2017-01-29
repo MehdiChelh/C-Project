@@ -3,11 +3,13 @@
 QuandlDialog::QuandlDialog() : QDialog()
 {
     this->setWindowTitle(QString("Selection des données provenant de Quandl"));
+    this->resize(500, 500*9/16);
+
     grid = new QGridLayout();
     this->setLayout(grid);
 
     searchKeywords = new QLineEdit(this);
-    searchKeywords -> setPlaceholderText("");
+    searchKeywords -> setPlaceholderText("Ex: Apple");
     grid->addWidget(searchKeywords, 0,0);
 
     search_button = new QPushButton(this);
@@ -17,6 +19,10 @@ QuandlDialog::QuandlDialog() : QDialog()
     grid->addWidget(search_button, 0, 1);
 
     listWidget = new QTreeWidget(this);
+    listWidget->setColumnCount(4);
+    QStringList columnsLabel;
+    columnsLabel << "Name" << "ID" << "Oldest date" << "Newest date";
+    listWidget->setHeaderLabels(columnsLabel);
     listWidget->resize(500, 200);
     grid->addWidget(listWidget, 1, 0, 1, 2);
 

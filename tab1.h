@@ -33,6 +33,7 @@
 #include "data.h"
 #include "tablewidget.h"
 #include "preprocdialog.h"
+#include "traindialog.h"
 
 class Tab1 : public QWidget
 {

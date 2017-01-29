@@ -19,6 +19,7 @@ private:
     QList<QByteArray> columns_name;
     QList<QByteArray> date;
     std::vector<std::vector <double>> input;
+//    QString filename;
 };
 
 #endif // DATA_H

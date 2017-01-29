@@ -1,5 +1,6 @@
 #include <QApplication>
 #include <QPushButton>
+#include <Python.h>
 #include "window.h"
 
 int main(int argc, char *argv[])
@@ -12,6 +13,9 @@ int main(int argc, char *argv[])
 
     Window win;
     win.show();
+
+
+
 
     return app.exec();
 }
