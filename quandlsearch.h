@@ -27,7 +27,7 @@ public:
     ~QuandlSearch();
 public slots:
     void searchResponse();
-    void downloadDataset(const QString start_date, const QString end_date, const QString dir);
+    QString downloadDataset(const QString start_date, const QString end_date, const QString dir);
 private:
     QLineEdit* searchKeywords;
     QTreeWidget* listWidget;

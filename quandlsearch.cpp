@@ -59,7 +59,7 @@ void QuandlSearch::searchResponse()
 
 }
 
-void QuandlSearch::downloadDataset(const QString start_date, const QString end_date, const QString dir)
+QString QuandlSearch::downloadDataset(const QString start_date, const QString end_date, const QString dir)
 {
     if(dir != ""){
         if(listWidget->currentItem() != NULL){
@@ -94,10 +94,12 @@ void QuandlSearch::downloadDataset(const QString start_date, const QString end_d
                     fclose(fp);
                     std::string message = "The download is finished. The data is available in" + filename;
                     QMessageBox::information(this, "Data", message.c_str());
+                    return QString::fromStdString(filename);
                 }
             }
         }
     }
+    return "";
 }
 
 

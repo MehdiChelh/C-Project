@@ -24,7 +24,7 @@ Tab1::Tab1() : QWidget()
     //Bouton pour ouvrir la boite de dialogue pour charger les données
     load_data_button = new QPushButton("Load custom data", data_selection_groupbox);
     load_data_button -> setCursor(Qt::PointingHandCursor);
-    QObject::connect(load_data_button, SIGNAL(clicked()), this, SLOT(loadData()));
+    QObject::connect(load_data_button, SIGNAL(clicked()), this, SLOT(loadCustomData()));
     data_selection_layout -> addWidget(load_data_button);
 
     QLabel* orLabel = new QLabel(this);
@@ -122,7 +122,7 @@ void Tab1::enablingDisablingButtons(){
     pop_layer_button->setEnabled(paintWidget->getNNlayers().size() > 0);
     learning_button->setEnabled(paintWidget->getNNlayers().size() > 0);
 }
-void Tab1::loadData()
+void Tab1::loadCustomData()
 {
 
     pathToCSV = QFileDialog::getOpenFileName(this, "Ouvrir un fichier", QString(), "*.csv");
@@ -132,7 +132,7 @@ void Tab1::loadData()
         QList<QString> col = Data::byteArraysToStrings(columns);
         QList<QString> selectedColumns = selectItemsDialog("Select columns to keep", col);
         QList<QString> dateColumnLabel = selectItemsDialog("Select date label", col);
-        QList<QString> outputColumns = selectItemsDialog("Select date label", col);
+        QList<QString> outputColumns = selectItemsDialog("Select the output labels", selectedColumns);
         if(dateColumnLabel.length() == 1 && outputColumns.length() >= 1){
             data->openCSV(pathToCSV, selectedColumns, dateColumnLabel[0], outputColumns);
             table->fill(data);
@@ -163,7 +163,7 @@ void Tab1::selectData()
 
 void Tab1::QuandlDialog()
 {
-    class QuandlDialog* quandlDialog = new class QuandlDialog();
+    class QuandlDialog* quandlDialog = new class QuandlDialog(data, table);
     quandlDialog->show();
 }
 
@@ -190,7 +190,7 @@ void Tab1::DataPreprocessDialog()
 
 QList<QString> Tab1::selectItemsDialog(QString title, QList<QString> items)
 {
-    QDialog* selectColumnsDialog = new QDialog(this);
+    QDialog* selectColumnsDialog = new QDialog();
     selectColumnsDialog->setWindowTitle(title);
     QGridLayout* dialogGrid = new QGridLayout(selectColumnsDialog);
     selectColumnsDialog->setLayout(dialogGrid);

@@ -17,13 +17,16 @@
 #include <QDebug>
 #include <QLabel>
 #include <QSlider>
+#include "tab1.h"
 #include "quandlsearch.h"
+#include "data.h"
+#include "tablewidget.h"
 
 class QuandlDialog : public QDialog
 {
     Q_OBJECT
 public:
-    QuandlDialog();
+    QuandlDialog(Data* _data, TableWidget* _table);
     ~QuandlDialog();
 public slots:
     void enablingSelection();
@@ -40,7 +43,10 @@ private:
     QLineEdit* end_date;
     QLineEdit* start_date;
     QLineEdit* destination_folder;
+    Data* data;
+    TableWidget *table;
 };
 
 
 #endif // QUANDLDIALOG_H
+

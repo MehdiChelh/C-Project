@@ -1,7 +1,10 @@
 #include "quandldialog.h"
 
-QuandlDialog::QuandlDialog() : QDialog()
+QuandlDialog::QuandlDialog(Data* _data, TableWidget* _table) : QDialog()
 {
+    data = _data;
+    table = _table;
+
     this->setWindowTitle(QString("Télécharger des données financières provenant de Quandl"));
     this->resize(500, 500*9/16);
 
@@ -79,8 +82,17 @@ void QuandlDialog::selectDate()
 
 void QuandlDialog::download()
 {
-    qDebug() << "slot ok";
-    search->downloadDataset(start_date->text(), end_date->text(), destination_folder->text());
+    QString pathToCSV = search->downloadDataset(start_date->text(), end_date->text(), destination_folder->text());
+    this->close();
+    QList<QByteArray> columns = data->getColumnsOfCSV(pathToCSV);
+    QList<QString> col = Data::byteArraysToStrings(columns);
+    QList<QString> selectedColumns = Tab1::selectItemsDialog("Select columns to keep", col);
+    selectedColumns.removeAll("Date");
+    QList<QString> outputColumns = Tab1::selectItemsDialog("Select the output labels", selectedColumns);
+    if(outputColumns.length() >= 1){
+        data->openCSV(pathToCSV, selectedColumns, "Date", outputColumns);
+        table->fill(data);
+    }
 }
 
 void QuandlDialog::chooseFolder()
