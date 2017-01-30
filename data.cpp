@@ -113,6 +113,9 @@ void Data::duplicateColumn(QString column_name)
     }
     QString new_col_name = column_name + "_" + QString::number(i);
     input_col_names.append(new_col_name);
+    for(int i = 0; i < input.size(); i++){
+        input[i].push_back(input[i][index]);
+    }
 }
 
 

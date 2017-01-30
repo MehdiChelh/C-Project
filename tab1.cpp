@@ -43,7 +43,7 @@ Tab1::Tab1() : QWidget()
 
     QPushButton* duplicate_column_btn = new QPushButton("Duplicate column", this);
         duplicate_column_btn -> setCursor(Qt::PointingHandCursor);
-//        QObject::connect(duplicate_column_btn, SIGNAL(clicked()), this, SLOT(duplicateColumn()));
+        QObject::connect(duplicate_column_btn, SIGNAL(clicked()), this, SLOT(duplicateColumn()));
         grid->addWidget(duplicate_column_btn, 1, 1);
 //    TrainTestLabel* label = new TrainTestLabel(this);
 //    grid->addWidget(label, 1, 0);
@@ -138,12 +138,14 @@ void Tab1::loadCustomData()
         QMessageBox::information(this, "Fichier", "Vous avez sélectionné :\n" + pathToCSV.split("/").last());
         QList<QByteArray> columns = data->getColumnsOfCSV(pathToCSV);
         QList<QString> col = Data::byteArraysToStrings(columns);
-        QList<QString> selectedColumns = selectItemsDialog("Select input labels", col);
         QList<QString> dateColumnLabel = selectItemsDialog("Select date label", col);
+        QList<QString> inputColumns = selectItemsDialog("Select input labels", col);
         QList<QString> outputColumns = selectItemsDialog("Select output labels", col);
         if(dateColumnLabel.length() == 1 && outputColumns.length() >= 1){
-            data->openCSV(pathToCSV, selectedColumns, dateColumnLabel[0], outputColumns);
+            data->openCSV(pathToCSV, inputColumns, dateColumnLabel[0], outputColumns);
             table->fill(data);
+            comboBox->clear();
+            comboBox->addItems(inputColumns);
         }
     }
 }
@@ -221,6 +223,12 @@ QList<QString> Tab1::selectItemsDialog(QString title, QList<QString> items)
         selectedRows.append(selectedItems[i]->text());
     }
     return selectedRows;
+}
+
+void Tab1::duplicateColumn()
+{
+    data->duplicateColumn(comboBox->currentText());
+    table->fill(data);
 }
 
 Tab1::~Tab1()

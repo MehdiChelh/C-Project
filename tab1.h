@@ -50,6 +50,7 @@ public slots:
     void enablingDisablingButtons();
     void DataPreprocessDialog();
     void QuandlDialog();
+    void duplicateColumn();
 private:
     QGridLayout *grid;
     QPushButton *load_data_button;
