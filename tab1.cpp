@@ -37,20 +37,28 @@ Tab1::Tab1() : QWidget()
     QObject::connect(select_data_button, SIGNAL(clicked()), this, SLOT(selectData()));
     data_selection_layout -> addWidget(select_data_button);
 
-    TrainTestLabel* label = new TrainTestLabel(this);
-    grid->addWidget(label, 1, 0);
+    comboBox = new QComboBox(this);
+        comboBox->addItem(tr("--No column--"));
+        grid->addWidget(comboBox, 1, 0);
 
-    QSlider* slider = new QSlider(Qt::Horizontal, this);
-    slider->setTickInterval(100);
-    slider->setValue(50);
-    slider->setMinimum(1);
-    QObject::connect(slider, SIGNAL(valueChanged(int)), label, SLOT(setCustomText(int)));
-    grid->addWidget(slider, 1, 1);
+    QPushButton* duplicate_column_btn = new QPushButton("Duplicate column", this);
+        duplicate_column_btn -> setCursor(Qt::PointingHandCursor);
+//        QObject::connect(duplicate_column_btn, SIGNAL(clicked()), this, SLOT(duplicateColumn()));
+        grid->addWidget(duplicate_column_btn, 1, 1);
+//    TrainTestLabel* label = new TrainTestLabel(this);
+//    grid->addWidget(label, 1, 0);
 
-    int train = slider->value();
-    QString labelText = "<b>Train/Test : </b>";
-    labelText.append(QStringLiteral("%1/%2").arg(train).arg(100-train));
-    label->setText(labelText);
+//    QSlider* slider = new QSlider(Qt::Horizontal, this);
+//    slider->setTickInterval(100);
+//    slider->setValue(50);
+//    slider->setMinimum(1);
+//    QObject::connect(slider, SIGNAL(valueChanged(int)), label, SLOT(setCustomText(int)));
+//    grid->addWidget(slider, 1, 1);
+
+//    int train = slider->value();
+//    QString labelText = "<b>Train/Test : </b>";
+//    labelText.append(QStringLiteral("%1/%2").arg(train).arg(100-train));
+//    label->setText(labelText);
 
 
 
@@ -130,9 +138,9 @@ void Tab1::loadCustomData()
         QMessageBox::information(this, "Fichier", "Vous avez sélectionné :\n" + pathToCSV.split("/").last());
         QList<QByteArray> columns = data->getColumnsOfCSV(pathToCSV);
         QList<QString> col = Data::byteArraysToStrings(columns);
-        QList<QString> selectedColumns = selectItemsDialog("Select columns to keep", col);
+        QList<QString> selectedColumns = selectItemsDialog("Select input labels", col);
         QList<QString> dateColumnLabel = selectItemsDialog("Select date label", col);
-        QList<QString> outputColumns = selectItemsDialog("Select the output labels", selectedColumns);
+        QList<QString> outputColumns = selectItemsDialog("Select output labels", col);
         if(dateColumnLabel.length() == 1 && outputColumns.length() >= 1){
             data->openCSV(pathToCSV, selectedColumns, dateColumnLabel[0], outputColumns);
             table->fill(data);

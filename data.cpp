@@ -38,57 +38,83 @@ QList<QByteArray> Data::getColumnsOfCSV(QString pathToCSV)
     return lines[0].split(',');
 }
 
-void Data::openCSV(QString pathToCSV, QList<QString> selectedColumns, QString dateLabel, QList<QString> outputColumns)
+void Data::openCSV(QString pathToCSV, QList<QString> selectedInputColumns, QString dateLabel, QList<QString> outputColumns)
 {
     int dateIndice;
     QList<int> selectedInputIndices;
+    QList<int> selectedOutputIndices;
 
     QFile file(pathToCSV);
     if (!file.open(QIODevice::ReadOnly)) {
         qDebug() << file.errorString();
     }
 
-    QStringList wordList;
-    QList<QByteArray> lines = file.readAll().split('\n');
-    //On stock l'entête dans entete :
-    columns_name = selectedColumns;
-    columns_name.removeAll(dateLabel);
 
+    input_col_names = selectedInputColumns;
+    input_col_names.removeAll(dateLabel);
+
+    output_col_names = outputColumns;
+    output_col_names.removeAll(dateLabel);
+
+    QList<QByteArray> lines = file.readAll().split('\n');
+    //On récupère les indices des colones choisies comme input
     QList<QByteArray> entete = lines[0].split(',');
     for(int i = 0; i < entete.length(); i++)
     {
-        if(columns_name.contains(entete[i]) && entete[i] != dateLabel){
+        if(input_col_names.contains(entete[i]) && entete[i] != dateLabel){
             selectedInputIndices.append(i);
         }
         if(dateLabel == entete[i])
         {
             dateIndice = i;
         }
+
+        if(output_col_names.contains(entete[i]) && entete[i] != dateLabel){
+            int index = output_col_names.indexOf(entete[i]);
+            QString newTitle = entete[i] + " [OUTPUT]";
+
+            output_col_names.replace(index, newTitle);
+            selectedOutputIndices.append(i);
+        }
+
     }
-    for(int i = 0; i < outputColumns.length(); i++){
-        int indice = columns_name.indexOf(outputColumns[i]);
-        columns_name[indice] = QStringLiteral("OUTPUT_%1 [%2]").arg(i).arg(outputColumns[i]);
-    }
-    qDebug() << columns_name;
+//    for(int i = 0; i < outputColumns.length(); i++){
+//        input_col_names.removeAll(outputColumns[i]);
+//        input_col_names.append(QStringLiteral("OUTPUT_%1 [%2]").arg(i).arg(outputColumns[i]));
+//        selectedOutputIndices.append(i);
+//    }
+    qDebug() << input_col_names;
     qDebug() << selectedInputIndices;
 //    //On commence à 1 pour ne pas prendre en compte la première ligne (en suppose qu'elle contient le nom des colonnes)
-    std::vector<double> vec;
     for(int i = 1; i < lines.length(); i++){
         QList<QByteArray> liste = lines[i].split(',');
         if(liste.length() >= selectedInputIndices.last()){
-            vec.clear();
+            std::vector<double> vecInput;
+            std::vector<double> vecOutput;
             Q_FOREACH (const int& indice, selectedInputIndices){
-                vec.push_back(liste[indice].toDouble());
+                vecInput.push_back(liste[indice].toDouble());
+            }
+            Q_FOREACH (const int& indice, selectedOutputIndices){
+                vecOutput.push_back(liste[indice].toDouble());
             }
             date.push_back(liste[dateIndice]);
-            input.push_back(vec);
+            input.push_back(vecInput);
+            output.push_back(vecOutput);
         }
     }
 }
 
-QList<QString> Data::getColumnsName(){
-    return columns_name;
+void Data::duplicateColumn(QString column_name)
+{
+    int index = input_col_names.indexOf(column_name);
+    int i = 1;
+    while(input_col_names.contains(column_name + "_" + QString::number(i))){
+        i++;
+    }
+    QString new_col_name = column_name + "_" + QString::number(i);
+    input_col_names.append(new_col_name);
 }
+
 
 QList<QString> Data::getDate(){
     return date;

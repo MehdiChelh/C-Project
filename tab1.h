@@ -24,6 +24,7 @@
 #include <QSyntaxHighlighter>
 #include <QGroupBox>
 #include <QListWidget>
+#include <QComboBox>
 #include <curl/curl.h>
 #include <Python/Python.h>
 //#include "PythonQt3.1/src/PythonQt.h"
@@ -61,6 +62,7 @@ private:
     Data *data;
     DrawNN *paintWidget;
     TableWidget *table;
+    QComboBox* comboBox;
 };
 
 

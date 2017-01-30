@@ -15,13 +15,17 @@ public:
     bool static isInferior(QString date1, QString date2);
     QList<QByteArray> getColumnsOfCSV(QString pathToCSV);
     void openCSV(QString pathToCSV, QList<QString> selectedColumns, QString dateLabel, QList<QString> outputColumns);
-    QList<QString> getColumnsName();
+    QList<QString> getInputColumnsName(){return input_col_names;}
+    QList<QString> getOutputColumnsName(){return output_col_names;}
     QList<QString> getDate();
     std::vector<std::vector <double>> getInput();
+    std::vector<std::vector <double>> getOutput(){return output;}
     QList<QString> static byteArraysToStrings(QList<QByteArray> listBA);
     bool isFilled() {return (input.size() > 0);}
+    void duplicateColumn(QString column_name);
 private:
-    QList<QString> columns_name;
+    QList<QString> input_col_names;
+    QList<QString> output_col_names;
     QList<QString> date;
     std::vector<std::vector <double>> input;
     std::vector<std::vector <double>> output;

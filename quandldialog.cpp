@@ -86,11 +86,12 @@ void QuandlDialog::download()
     this->close();
     QList<QByteArray> columns = data->getColumnsOfCSV(pathToCSV);
     QList<QString> col = Data::byteArraysToStrings(columns);
-    QList<QString> selectedColumns = Tab1::selectItemsDialog("Select columns to keep", col);
-    selectedColumns.removeAll("Date");
-    QList<QString> outputColumns = Tab1::selectItemsDialog("Select the output labels", selectedColumns);
+    QList<QString> inputColumns = Tab1::selectItemsDialog("Select input labels", col);
+    inputColumns.removeAll("Date");
+    QList<QString> outputColumns = Tab1::selectItemsDialog("Select output labels", col);
+    outputColumns.removeAll("Date");
     if(outputColumns.length() >= 1){
-        data->openCSV(pathToCSV, selectedColumns, "Date", outputColumns);
+        data->openCSV(pathToCSV, inputColumns, "Date", outputColumns);
         table->fill(data);
     }
 }
