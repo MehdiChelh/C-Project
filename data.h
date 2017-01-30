@@ -23,6 +23,7 @@ public:
     QList<QString> static byteArraysToStrings(QList<QByteArray> listBA);
     bool isFilled() {return (input.size() > 0);}
     void duplicateColumn(QString column_name);
+    void shiftColumn(QString column_name);
 private:
     QList<QString> input_col_names;
     QList<QString> output_col_names;

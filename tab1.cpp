@@ -10,7 +10,7 @@ Tab1::Tab1() : QWidget()
 
     //Widget permettant d'afficher les données
     table = new TableWidget(data, this);
-    grid -> addWidget(table, 2, 0, 1, 2);
+    grid -> addWidget(table, 3, 0, 1, 2);
 
     // Juste pour le design de la section de selection des données
     QGroupBox *data_selection_groupbox = new QGroupBox(this);
@@ -37,14 +37,25 @@ Tab1::Tab1() : QWidget()
     QObject::connect(select_data_button, SIGNAL(clicked()), this, SLOT(selectData()));
     data_selection_layout -> addWidget(select_data_button);
 
-    comboBox = new QComboBox(this);
-        comboBox->addItem(tr("--No column--"));
-        grid->addWidget(comboBox, 1, 0);
+
+    comboBox_1 = new QComboBox(this);
+        comboBox_1->addItem(tr("--No column--"));
+        grid->addWidget(comboBox_1, 1, 0);
 
     QPushButton* duplicate_column_btn = new QPushButton("Duplicate column", this);
         duplicate_column_btn -> setCursor(Qt::PointingHandCursor);
         QObject::connect(duplicate_column_btn, SIGNAL(clicked()), this, SLOT(duplicateColumn()));
         grid->addWidget(duplicate_column_btn, 1, 1);
+
+
+    comboBox_2 = new QComboBox(this);
+        comboBox_2->addItem(tr("--No column--"));
+        grid->addWidget(comboBox_2, 2, 0);
+
+    QPushButton* shift_column_btn = new QPushButton("Shift column", this);
+        shift_column_btn -> setCursor(Qt::PointingHandCursor);
+        QObject::connect(shift_column_btn, SIGNAL(clicked()), this, SLOT(shiftColumn()));
+        grid->addWidget(shift_column_btn, 2, 1);
 //    TrainTestLabel* label = new TrainTestLabel(this);
 //    grid->addWidget(label, 1, 0);
 
@@ -64,7 +75,7 @@ Tab1::Tab1() : QWidget()
 
     //Widget contenant le painter affichant le NN
     paintWidget = new DrawNN(this);
-    grid -> addWidget(paintWidget, 1, 2, 2, 4);
+    grid -> addWidget(paintWidget, 1, 2, 3, 4);
 
     QGroupBox *manage_layers = new QGroupBox(this);
     manage_layers->setTitle(QString("Ajouter/supprimer des couches du réseau de neurones"));
@@ -111,7 +122,7 @@ Tab1::Tab1() : QWidget()
     QPushButton *data_preprocess_button = new QPushButton("Data preprocessing");
     data_preprocess_button -> setCursor(Qt::PointingHandCursor);
     QObject::connect(data_preprocess_button, SIGNAL(clicked()), this, SLOT(DataPreprocessDialog()));
-    grid -> addWidget(data_preprocess_button, 3, 0);
+    grid -> addWidget(data_preprocess_button, 4, 0);
 
 
     //Bouton qui lance le learning
@@ -121,7 +132,7 @@ Tab1::Tab1() : QWidget()
 //    QObject::connect(learning_button, SIGNAL(clicked()), qApp, SLOT(quit()));
     TrainDialog *tesst = new TrainDialog();
     QObject::connect(learning_button, SIGNAL(clicked()), tesst, SLOT(Test()));
-    grid -> addWidget(learning_button, 3, 5);
+    grid -> addWidget(learning_button, 4, 5);
 }
 void Tab1::resetInputFormNeurons(){
     inputFormNeurons->clear();
@@ -144,8 +155,10 @@ void Tab1::loadCustomData()
         if(dateColumnLabel.length() == 1 && outputColumns.length() >= 1){
             data->openCSV(pathToCSV, inputColumns, dateColumnLabel[0], outputColumns);
             table->fill(data);
-            comboBox->clear();
-            comboBox->addItems(inputColumns);
+            comboBox_1->clear();
+            comboBox_1->addItems(inputColumns);
+            comboBox_2->clear();
+            comboBox_2->addItems(inputColumns);
         }
     }
 }
@@ -227,8 +240,26 @@ QList<QString> Tab1::selectItemsDialog(QString title, QList<QString> items)
 
 void Tab1::duplicateColumn()
 {
-    data->duplicateColumn(comboBox->currentText());
-    table->fill(data);
+    if(comboBox_1->currentText() != "--No column--"){
+        data->duplicateColumn(comboBox_1->currentText());
+        table->fill(data);
+        comboBox_1->clear();
+        comboBox_1->addItems(data->getInputColumnsName());
+        comboBox_2->clear();
+        comboBox_2->addItems(data->getInputColumnsName());
+    }
+}
+
+void Tab1::shiftColumn()
+{
+    if(comboBox_1->currentText() != "--No column--"){
+        data->shiftColumn(comboBox_2->currentText());
+        table->fill(data);
+        comboBox_1->clear();
+        comboBox_1->addItems(data->getInputColumnsName());
+        comboBox_2->clear();
+        comboBox_2->addItems(data->getInputColumnsName());
+    }
 }
 
 Tab1::~Tab1()

@@ -51,6 +51,7 @@ public slots:
     void DataPreprocessDialog();
     void QuandlDialog();
     void duplicateColumn();
+    void shiftColumn();
 private:
     QGridLayout *grid;
     QPushButton *load_data_button;
@@ -63,7 +64,8 @@ private:
     Data *data;
     DrawNN *paintWidget;
     TableWidget *table;
-    QComboBox* comboBox;
+    QComboBox* comboBox_1;
+    QComboBox* comboBox_2;
 };
 
 

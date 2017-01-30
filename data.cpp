@@ -118,6 +118,31 @@ void Data::duplicateColumn(QString column_name)
     }
 }
 
+void Data::shiftColumn(QString column_name)
+{
+    qDebug() << "ok1";
+    int index = input_col_names.indexOf(column_name);
+    std::vector<std::vector<double>> new_input;
+    qDebug() << "ok2";
+    for(int i = 0; i < input.size() - 1; i++){
+        std::vector<double> vec;
+        qDebug() << i;
+        for(int j = 0; j < input[i].size(); j++){
+            if(j==index){
+                vec.push_back(input[i+1][j]);
+            }
+            else{
+                vec.push_back(input[i][j]);
+            }
+            qDebug()<<j;
+        }
+        new_input.push_back(vec);
+    }
+    qDebug() << "ok3";
+    input = new_input;
+    output.pop_back();
+}
+
 
 QList<QString> Data::getDate(){
     return date;
