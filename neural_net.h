@@ -17,6 +17,7 @@ public:
     void Feed_Forward(const std::vector<double> &inputVals);
     void Generalized_Delta_Rule(const std::vector<double> &targetVals);
     void Get_Results(std::vector<double> &resultVals) ;
+    double Get_Error() { return m_error; }
 
 private:
     std::vector<Layer> m_id_layer_neuron; // m_id_layer_neuron[layerNum][neuronNum]

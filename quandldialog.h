@@ -15,6 +15,8 @@
 #include <QJsonValue>
 #include <curl/curl.h>
 #include <QDebug>
+#include <QLabel>
+#include <QSlider>
 #include "quandlsearch.h"
 
 class QuandlDialog : public QDialog
@@ -24,7 +26,10 @@ public:
     QuandlDialog();
     ~QuandlDialog();
 public slots:
-    void disableButtons();
+    void enablingSelection();
+    void selectDate();
+    void chooseFolder();
+    void download();
 private:
     QGridLayout *grid;
     QLineEdit* searchKeywords;
@@ -32,5 +37,10 @@ private:
     QPushButton *select_dataset;
     QPushButton *search_button;
     QuandlSearch *search;
+    QLineEdit* end_date;
+    QLineEdit* start_date;
+    QLineEdit* destination_folder;
 };
+
+
 #endif // QUANDLDIALOG_H

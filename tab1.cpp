@@ -3,14 +3,14 @@
 Tab1::Tab1() : QWidget()
 {
     data = new Data();
-
+    qDebug() << data->isFilled();
     grid = new QGridLayout(this);
     this->setLayout(grid);
 
 
     //Widget permettant d'afficher les données
     table = new TableWidget(data, this);
-    grid -> addWidget(table, 1, 0, 1, 2);
+    grid -> addWidget(table, 2, 0, 1, 2);
 
     // Juste pour le design de la section de selection des données
     QGroupBox *data_selection_groupbox = new QGroupBox(this);
@@ -22,13 +22,14 @@ Tab1::Tab1() : QWidget()
     data_selection_groupbox->setLayout(data_selection_layout);
 
     //Bouton pour ouvrir la boite de dialogue pour charger les données
-    load_data_button = new QPushButton("Load external data", data_selection_groupbox);
+    load_data_button = new QPushButton("Load custom data", data_selection_groupbox);
     load_data_button -> setCursor(Qt::PointingHandCursor);
     QObject::connect(load_data_button, SIGNAL(clicked()), this, SLOT(loadData()));
     data_selection_layout -> addWidget(load_data_button);
 
     QLabel* orLabel = new QLabel(this);
     orLabel->setText("or");
+    orLabel->setAlignment(Qt::AlignCenter);
     data_selection_layout->addWidget(orLabel);
 
     QPushButton *select_data_button = new QPushButton("Select data", data_selection_groupbox);
@@ -36,12 +37,26 @@ Tab1::Tab1() : QWidget()
     QObject::connect(select_data_button, SIGNAL(clicked()), this, SLOT(selectData()));
     data_selection_layout -> addWidget(select_data_button);
 
+    TrainTestLabel* label = new TrainTestLabel(this);
+    grid->addWidget(label, 1, 0);
+
+    QSlider* slider = new QSlider(Qt::Horizontal, this);
+    slider->setTickInterval(100);
+    slider->setValue(50);
+    slider->setMinimum(1);
+    QObject::connect(slider, SIGNAL(valueChanged(int)), label, SLOT(setCustomText(int)));
+    grid->addWidget(slider, 1, 1);
+
+    int train = slider->value();
+    QString labelText = "<b>Train/Test : </b>";
+    labelText.append(QStringLiteral("%1/%2").arg(train).arg(100-train));
+    label->setText(labelText);
 
 
 
     //Widget contenant le painter affichant le NN
     paintWidget = new DrawNN(this);
-    grid -> addWidget(paintWidget, 1, 2, 1, 4);
+    grid -> addWidget(paintWidget, 1, 2, 2, 4);
 
     QGroupBox *manage_layers = new QGroupBox(this);
     manage_layers->setTitle(QString("Ajouter/supprimer des couches du réseau de neurones"));
@@ -88,7 +103,7 @@ Tab1::Tab1() : QWidget()
     QPushButton *data_preprocess_button = new QPushButton("Data preprocessing");
     data_preprocess_button -> setCursor(Qt::PointingHandCursor);
     QObject::connect(data_preprocess_button, SIGNAL(clicked()), this, SLOT(DataPreprocessDialog()));
-    grid -> addWidget(data_preprocess_button, 2, 0);
+    grid -> addWidget(data_preprocess_button, 3, 0);
 
 
     //Bouton qui lance le learning
@@ -98,7 +113,7 @@ Tab1::Tab1() : QWidget()
 //    QObject::connect(learning_button, SIGNAL(clicked()), qApp, SLOT(quit()));
     TrainDialog *tesst = new TrainDialog();
     QObject::connect(learning_button, SIGNAL(clicked()), tesst, SLOT(Test()));
-    grid -> addWidget(learning_button, 2, 5);
+    grid -> addWidget(learning_button, 3, 5);
 }
 void Tab1::resetInputFormNeurons(){
     inputFormNeurons->clear();
@@ -113,8 +128,15 @@ void Tab1::loadData()
     pathToCSV = QFileDialog::getOpenFileName(this, "Ouvrir un fichier", QString(), "*.csv");
     if(pathToCSV != ""){
         QMessageBox::information(this, "Fichier", "Vous avez sélectionné :\n" + pathToCSV.split("/").last());
-        data->openCSV(pathToCSV);
-        table->fill(data);
+        QList<QByteArray> columns = data->getColumnsOfCSV(pathToCSV);
+        QList<QString> col = Data::byteArraysToStrings(columns);
+        QList<QString> selectedColumns = selectItemsDialog("Select columns to keep", col);
+        QList<QString> dateColumnLabel = selectItemsDialog("Select date label", col);
+        QList<QString> outputColumns = selectItemsDialog("Select date label", col);
+        if(dateColumnLabel.length() == 1 && outputColumns.length() >= 1){
+            data->openCSV(pathToCSV, selectedColumns, dateColumnLabel[0], outputColumns);
+            table->fill(data);
+        }
     }
 }
 
@@ -166,7 +188,32 @@ void Tab1::DataPreprocessDialog()
     qDebug() << result;*/
 }
 
-
+QList<QString> Tab1::selectItemsDialog(QString title, QList<QString> items)
+{
+    QDialog* selectColumnsDialog = new QDialog(this);
+    selectColumnsDialog->setWindowTitle(title);
+    QGridLayout* dialogGrid = new QGridLayout(selectColumnsDialog);
+    selectColumnsDialog->setLayout(dialogGrid);
+    QListWidget* listWidget = new QListWidget();
+    for(int i = 0; i < items.length(); i++){
+        listWidget->addItem(items[i]);
+    }
+    listWidget->setSelectionMode(QAbstractItemView::ExtendedSelection);
+    dialogGrid->addWidget(listWidget, 0, 0);
+    QPushButton* close_button = new QPushButton("Select", selectColumnsDialog);
+    QObject::connect(close_button, SIGNAL(clicked()), selectColumnsDialog, SLOT(close()));
+    dialogGrid->addWidget(close_button, 1, 0);
+    if(selectColumnsDialog->exec() == QDialog::Accepted){
+        //La condition dans le if permet d'attendre la fermeture de la boit de dialogue
+        qDebug() << "DialogCode : Accepted";
+    }
+    QList<QListWidgetItem*> selectedItems = listWidget->selectedItems();
+    QList<QString> selectedRows;
+    for(int i = 0; i < selectedItems.length(); i++){
+        selectedRows.append(selectedItems[i]->text());
+    }
+    return selectedRows;
+}
 
 Tab1::~Tab1()
 {
@@ -174,4 +221,18 @@ Tab1::~Tab1()
     delete load_data_button;
     delete add_layer_button;
     delete data;
+}
+
+
+
+TrainTestLabel::TrainTestLabel(QWidget* parent): QLabel(parent)
+{
+
+}
+
+void TrainTestLabel::setCustomText(int train)
+{
+    QString labelText = "<b>Train/Test : </b>";
+    labelText.append(QStringLiteral("%1/%2").arg(train).arg(100-train));
+    this->setText(labelText);
 }

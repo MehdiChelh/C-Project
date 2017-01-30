@@ -23,7 +23,6 @@ size_t writeCallback(char* buf, size_t size, size_t nmemb, void* up)
 
 void QuandlSearch::searchResponse()
 {
-    qDebug() << searchKeywords->text();
     listWidget->clear();
 
     CURL *curl;
@@ -54,41 +53,49 @@ void QuandlSearch::searchResponse()
         QJsonObject obj = value.toObject();
         QList<QString> list;
         list << obj["name"].toString() << obj["dataset_code"].toString() << obj["oldest_available_date"].toString() << obj["newest_available_date"].toString();
-        qDebug() << list;
         listWidget->addTopLevelItem(new QTreeWidgetItem(list));
     }
     getResp = "";
 
 }
 
-void QuandlSearch::selectItem()
+void QuandlSearch::downloadDataset(const QString start_date, const QString end_date, const QString dir)
 {
-    //    qDebug() << (*(listWidget->currentItem())).text(1);
-    //    QString dataset_code = (*(listWidget->currentItem())).text(1);
-    QString dir = QFileDialog::getExistingDirectory(this, tr("Open Directory"),
-                                   "",
-                                   QFileDialog::ShowDirsOnly|QFileDialog::DontResolveSymlinks);
-    CURL *curl;
-    curl = curl_easy_init();
-    if(curl) {
-        qDebug() << "https://www.quandl.com/api/v3/datasets.json?query="+searchKeywords->text();
-        std::string url = std::string("https://www.quandl.com/api/v3/datasets/WIKI/aapl")
-//                                      + std::string(dataset_code.toUtf8().constData())
-                                      + std::string(".csv?api_key=kuExaMxAa629HY7dRvgH");
+    if(dir != ""){
+        if(listWidget->currentItem() != NULL){
+            QString dataset_code = (*(listWidget->currentItem())).text(1);
+            CURL *curl;
+            curl = curl_easy_init();
+            if(curl) {
+                std::string url = std::string("https://www.quandl.com/api/v3/datasets/WIKI/")
+                                              + std::string(dataset_code.toUtf8().constData())
+                                              + std::string(".csv?api_key=kuExaMxAa629HY7dRvgH&start_date=")
+                                              + std::string(start_date.toUtf8().constData())
+                                              + std::string("&end_date=")
+                                              + std::string(end_date.toUtf8().constData());
 
-        FILE *fp;
-        CURLcode res;
-        std::string filename = dir.toStdString() + "/appl.csv";
-        curl = curl_easy_init();
-        if (curl)
-        {
-            fp = fopen(filename.c_str(),"wb");
-            curl_easy_setopt(curl, CURLOPT_URL, url.c_str());
-            curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, NULL);
-            curl_easy_setopt(curl, CURLOPT_WRITEDATA, fp);
-            res = curl_easy_perform(curl);
-            curl_easy_cleanup(curl);
-            fclose(fp);
+                FILE *fp;
+                CURLcode res;
+                std::string filename = dir.toStdString() + "/"
+                                                         + dataset_code.toStdString()
+                                                         + start_date.toStdString()
+                                                         + "_"
+                                                         + end_date.toStdString()
+                                                         + ".csv";
+                curl = curl_easy_init();
+                if (curl)
+                {
+                    fp = fopen(filename.c_str(),"wb");
+                    curl_easy_setopt(curl, CURLOPT_URL, url.c_str());
+                    curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, NULL);
+                    curl_easy_setopt(curl, CURLOPT_WRITEDATA, fp);
+                    res = curl_easy_perform(curl);
+                    curl_easy_cleanup(curl);
+                    fclose(fp);
+                    std::string message = "The download is finished. The data is available in" + filename;
+                    QMessageBox::information(this, "Data", message.c_str());
+                }
+            }
         }
     }
 }

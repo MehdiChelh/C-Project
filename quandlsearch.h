@@ -16,6 +16,8 @@
 #include <curl/curl.h>
 #include <QDebug>
 #include <QFileDialog>
+#include "daterangedialog.h"
+#include <QMessageBox>
 
 class QuandlSearch : public QDialog
 {
@@ -25,7 +27,7 @@ public:
     ~QuandlSearch();
 public slots:
     void searchResponse();
-    void selectItem();
+    void downloadDataset(const QString start_date, const QString end_date, const QString dir);
 private:
     QLineEdit* searchKeywords;
     QTreeWidget* listWidget;

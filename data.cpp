@@ -27,8 +27,22 @@ bool Data::isInferior(QString date1, QString date2)
     }
 }
 
-void Data::openCSV(QString pathToCSV)
+QList<QByteArray> Data::getColumnsOfCSV(QString pathToCSV)
 {
+    QFile file(pathToCSV);
+    if (!file.open(QIODevice::ReadOnly)) {
+        qDebug() << file.errorString();
+    }
+    QList<QByteArray> lines = file.readAll().split('\n');
+    //On retourne la première ligne du csv (en supposant qu'elle contient le nom des colonnes)
+    return lines[0].split(',');
+}
+
+void Data::openCSV(QString pathToCSV, QList<QString> selectedColumns, QString dateLabel, QList<QString> outputColumns)
+{
+    int dateIndice;
+    QList<int> selectedInputIndices;
+
     QFile file(pathToCSV);
     if (!file.open(QIODevice::ReadOnly)) {
         qDebug() << file.errorString();
@@ -37,35 +51,58 @@ void Data::openCSV(QString pathToCSV)
     QStringList wordList;
     QList<QByteArray> lines = file.readAll().split('\n');
     //On stock l'entête dans entete :
-    columns_name = lines[0].split(',');
+    columns_name = selectedColumns;
+    columns_name.removeAll(dateLabel);
+
+    QList<QByteArray> entete = lines[0].split(',');
+    for(int i = 0; i < entete.length(); i++)
+    {
+        if(columns_name.contains(entete[i]) && entete[i] != dateLabel){
+            selectedInputIndices.append(i);
+        }
+        if(dateLabel == entete[i])
+        {
+            dateIndice = i;
+        }
+    }
+    for(int i = 0; i < outputColumns.length(); i++){
+        int indice = columns_name.indexOf(outputColumns[i]);
+        columns_name[indice] = QStringLiteral("OUTPUT_%1 [%2]").arg(i).arg(outputColumns[i]);
+    }
     qDebug() << columns_name;
-    //On commence à 1 pour ne pas prendre en compte l'entête
+    qDebug() << selectedInputIndices;
+//    //On commence à 1 pour ne pas prendre en compte la première ligne (en suppose qu'elle contient le nom des colonnes)
+    std::vector<double> vec;
     for(int i = 1; i < lines.length(); i++){
         QList<QByteArray> liste = lines[i].split(',');
-        for(int e = 0; e < liste.length(); e++){
-            if(liste[e] != ""){
-                QString datemax = "3000-12-12";
-                QString datemin = "0-0-0";
-                if((e == 1) && Data::isInferior(liste[0], datemax) && Data::isInferior(datemin, liste[0])){
-                    //pour l'instant on mets juste l'open et le high "bêtement" dans l'input
-                    const double arr[] = {liste[1].toDouble(), liste[2].toDouble()};
-                    std::vector<double> vec (arr, arr + sizeof(arr) / sizeof(arr[0]) );
-                    input.push_back(vec);
-//                    date.append(liste[0]);
-                }
+        if(liste.length() >= selectedInputIndices.last()){
+            vec.clear();
+            Q_FOREACH (const int& indice, selectedInputIndices){
+                vec.push_back(liste[indice].toDouble());
             }
+            date.push_back(liste[dateIndice]);
+            input.push_back(vec);
         }
     }
 }
 
-QList<QByteArray> Data::getColumnsName(){
+QList<QString> Data::getColumnsName(){
     return columns_name;
 }
 
-QList<QByteArray> Data::getDate(){
+QList<QString> Data::getDate(){
     return date;
 }
 
 std::vector<std::vector <double>> Data::getInput(){
     return input;
+}
+
+QList<QString> Data::byteArraysToStrings(QList<QByteArray> listBA)
+{
+    QList<QString> listS;
+    for(int i = 0; i < listBA.length(); i++){
+        listS.append(listBA[i].constData());
+    }
+    return listS;
 }

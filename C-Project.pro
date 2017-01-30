@@ -17,7 +17,9 @@ SOURCES += \
     tablewidget.cpp \
     preprocdialog.cpp \
     neural_net.cpp \
-    traindialog.cpp
+    traindialog.cpp \
+    daterangedialog.cpp \
+    datadialog.cpp
 
 HEADERS += \
     window.h \
@@ -32,6 +34,8 @@ HEADERS += \
     tablewidget.h \
     preprocdialog.h \
     neural_net.h \
-    traindialog.h
+    traindialog.h \
+    daterangedialog.h \
+    datadialog.h
 
 unix|win32: LIBS += -lcurl.4

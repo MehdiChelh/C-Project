@@ -1,6 +1,6 @@
 #include "quandldata.h"
 
-QuandlData::QuandlData()
+QuandlData::QuandlData(): Data()
 {
 
 }

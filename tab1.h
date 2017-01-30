@@ -41,6 +41,7 @@ class Tab1 : public QWidget
 public:
     Tab1();
     ~Tab1();
+    QList<QString> selectItemsDialog(QString title, QList<QString> items);
 public slots:
     void resetInputFormNeurons();
     void loadData();
@@ -63,6 +64,13 @@ private:
 };
 
 
-
+class TrainTestLabel: public QLabel
+{
+    Q_OBJECT
+public:
+    TrainTestLabel(QWidget* parent);
+public slots:
+    void setCustomText(int);
+};
 
 #endif // TAB1_H
