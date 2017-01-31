@@ -38,6 +38,7 @@ private:
     QProgressBar* trainProgress;
     QTreeWidget* mseList;
     QPushButton* test_btn;
+    QGroupBox *test_groupbox;
     QLabel* testRMSEResult;
     QTreeWidget* testResultsList;
     Data* data;

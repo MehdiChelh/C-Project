@@ -1,7 +1,5 @@
 #include "neural_net.h"
 
-//double Neuron::eta = 0.15;    // overall Neural_Net learning rate, [0.0..1.0]
-//double Neuron::alpha = 0.5;   // momentum, multiplier of last deltaWeight, [0.0..1.0]
 
 using namespace std;
 
@@ -240,5 +238,6 @@ TestResult Training_Data::Test(vector<vector<double>> input_values, vector<vecto
         error.push_back(Net.Get_Error());
     };
     TestResult result(sum/input_values[0].size(), result_values, error);
+    qDebug() << result_values[0][0] << "   " << error[0];
     return result;
 }

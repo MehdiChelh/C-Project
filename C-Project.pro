@@ -7,11 +7,11 @@ SOURCES += \
     main.cpp \
     window.cpp \
     tab1.cpp \
-    tab2.cpp \
+#    tab2.cpp \
     drawnn.cpp \
     quandlsearch.cpp \
     data.cpp \
-    quandldata.cpp \
+#    quandldata.cpp \
     quandldialog.cpp \
 #    preprocdialog.cpp \
     tablewidget.cpp \
@@ -19,17 +19,18 @@ SOURCES += \
     neural_net.cpp \
     traindialog.cpp \
     daterangedialog.cpp \
-    datadialog.cpp \
-    testresult.cpp
+#    datadialog.cpp \
+    testresult.cpp \
+#    neuron.cpp
 
 HEADERS += \
     window.h \
     tab1.h \
-    tab2.h \
+#    tab2.h \
     drawnn.h \
     quandlsearch.h \
     data.h \
-    quandldata.h \
+#    quandldata.h \
     quandldialog.h \
 #    preprocdialog.h \
     tablewidget.h \
@@ -37,7 +38,8 @@ HEADERS += \
     neural_net.h \
     traindialog.h \
     daterangedialog.h \
-    datadialog.h \
-    testresult.h
+#    datadialog.h \
+    testresult.h \
+#    neuron.h
 
 unix|win32: LIBS += -lcurl.4

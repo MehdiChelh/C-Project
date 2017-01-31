@@ -17,7 +17,7 @@ void DrawNN::paintEvent(QPaintEvent *)
 
     if(nLayers == 0)
     {
-        painter.drawText(WIDTH/2 - 155, HEIGHT/2 - 5, QString("Il faut donner une topologie au réseau de neurones."));
+        painter.drawText(WIDTH/2 - 190, HEIGHT/2 - 5, QString("You can add layers to the neural network with the form above."));
     }
     else{
         painter.setRenderHint(QPainter::Antialiasing);

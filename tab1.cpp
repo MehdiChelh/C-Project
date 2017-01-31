@@ -3,7 +3,6 @@
 Tab1::Tab1() : QWidget()
 {
     data = new Data();
-    qDebug() << data->isFilled();
     grid = new QGridLayout(this);
     this->setLayout(grid);
 
@@ -17,7 +16,7 @@ Tab1::Tab1() : QWidget()
 
     // Juste pour le design de la section de selection des données
     QGroupBox *data_selection_groupbox = new QGroupBox(this);
-    data_selection_groupbox->setTitle(QString("Selection des données"));
+    data_selection_groupbox->setTitle(QString("Select data"));
     //data_selection_groupbox->setStyleSheet("font-size: 18px");
     grid -> addWidget(data_selection_groupbox, 0, 0, 1, 2);
 
@@ -35,9 +34,9 @@ Tab1::Tab1() : QWidget()
     orLabel->setAlignment(Qt::AlignCenter);
     data_selection_layout->addWidget(orLabel);
 
-    QPushButton *select_data_button = new QPushButton("Select data", data_selection_groupbox);
+    QPushButton *select_data_button = new QPushButton("Load data from Quandl", data_selection_groupbox);
     select_data_button -> setCursor(Qt::PointingHandCursor);
-    QObject::connect(select_data_button, SIGNAL(clicked()), this, SLOT(selectData()));
+    QObject::connect(select_data_button, SIGNAL(clicked()), this, SLOT(QuandlDialog()));
     data_selection_layout -> addWidget(select_data_button);
 
 
@@ -67,7 +66,7 @@ Tab1::Tab1() : QWidget()
     grid -> addWidget(paintWidget, 1, 2, 3, 4);
 
     QGroupBox *manage_layers = new QGroupBox(this);
-    manage_layers->setTitle(QString("Ajouter/supprimer des couches du réseau de neurones"));
+    manage_layers->setTitle(QString("Add/remove layers"));
     //data_selection_groupbox->setStyleSheet("font-size: 18px");
     grid -> addWidget(manage_layers, 0, 2, 1, 4);
 
@@ -81,7 +80,7 @@ Tab1::Tab1() : QWidget()
 
     //Input pour le nombre de neurones du NN à ajouter
     inputFormNeurons = new QLineEdit(this);
-    inputFormNeurons->setPlaceholderText("Nombre de neurones");
+    inputFormNeurons->setPlaceholderText("Number of neurons");
     inputFormNeurons->setValidator(new QIntValidator(inputFormNeurons));
     QObject::connect(inputFormNeurons, SIGNAL(textChanged(QString)), paintWidget, SLOT(getNumberOfNeurons(QString)));
     manage_layers_layout -> addWidget(inputFormNeurons);
@@ -97,10 +96,9 @@ Tab1::Tab1() : QWidget()
     QObject::connect(inputFormNeurons, SIGNAL(returnPressed()), add_layer_button, SIGNAL(clicked()));
 
     //Bouton pour supprimer la dernière couche du NN
-    pop_layer_button = new QPushButton("Supprimer le dernier layer");
+    pop_layer_button = new QPushButton("Remove last layer");
     pop_layer_button -> setCursor(Qt::PointingHandCursor);
     pop_layer_button->setDisabled(paintWidget->getNNlayers()->size() == 0);
-    qDebug() << paintWidget->getNNlayers()->size();
     QObject::connect(pop_layer_button, SIGNAL(clicked()), paintWidget, SLOT(popLayer()));
     QObject::connect(pop_layer_button, SIGNAL(clicked()), this, SLOT(enablingDisablingButtons()));
     manage_layers_layout -> addWidget(pop_layer_button);
@@ -115,10 +113,9 @@ Tab1::Tab1() : QWidget()
 
 
     //Bouton qui lance le learning
-    learning_button = new QPushButton("Entrainer le réseau");
+    learning_button = new QPushButton("Train the model");
     learning_button -> setCursor(Qt::PointingHandCursor);
-//    learning_button -> setDisabled(true);
-    learning_button -> setDisabled(false);
+    learning_button -> setDisabled(true);
     TrainDialog *tesst = new TrainDialog(this, data, paintWidget->getNNlayers());
     QObject::connect(learning_button, SIGNAL(clicked()), tesst, SLOT(show()));
     grid -> addWidget(learning_button, 4, 5);
@@ -220,8 +217,7 @@ QList<QString> Tab1::selectItemsDialog(QString title, QString stringLabel, QList
     QObject::connect(close_button, SIGNAL(clicked()), selectColumnsDialog, SLOT(close()));
     dialogGrid->addWidget(close_button, 2, 0);
     if(selectColumnsDialog->exec() == QDialog::Accepted){
-        //La condition dans le if permet d'attendre la fermeture de la boit de dialogue
-        qDebug() << "DialogCode : Accepted";
+        //La condition dans le if permet d'attendre la fermeture de la boite de dialogue
     }
     QList<QListWidgetItem*> selectedItems = listWidget->selectedItems();
     QList<QString> selectedRows;

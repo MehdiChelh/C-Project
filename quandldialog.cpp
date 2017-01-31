@@ -7,7 +7,7 @@ QuandlDialog::QuandlDialog(Data* _data, TableWidget* _table, QComboBox* _comboBo
     comboBox_1 = _comboBox_1;
     comboBox_2 = _comboBox_2;
 
-    this->setWindowTitle(QString("Télécharger des données financières provenant de Quandl"));
+    this->setWindowTitle(QString("Download financial time serie from Quandl"));
     this->resize(500, 500*9/16);
 
     grid = new QGridLayout();
@@ -17,7 +17,7 @@ QuandlDialog::QuandlDialog(Data* _data, TableWidget* _table, QComboBox* _comboBo
     searchKeywords -> setPlaceholderText("Ex: Apple");
     grid->addWidget(searchKeywords, 0,0);
 
-    search_button = new QPushButton("Rechercher", this);
+    search_button = new QPushButton("Search", this);
     search_button->setCursor(Qt::PointingHandCursor);
     QObject::connect(search_button, SIGNAL(clicked()), this, SLOT(enablingSelection()));
     grid->addWidget(search_button, 0, 1);
@@ -93,7 +93,7 @@ void QuandlDialog::download()
     QList<QString> outputColumns = Tab1::selectItemsDialog("Select output labels", "Select the label(s) that you want to use as output variables in your model", col);
     outputColumns.removeAll("Date");
 
-    if(outputColumns.length() >= 1){
+    if(outputColumns.length() >= 1 && inputColumns.length() >= 1){
         data->openCSV(pathToCSV, inputColumns, "Date", outputColumns);
         table->fill(data);
         comboBox_1->clear();
@@ -105,7 +105,7 @@ void QuandlDialog::download()
 
 void QuandlDialog::chooseFolder()
 {
-    QString dir = QFileDialog::getExistingDirectory(this, tr("Sélectionner un dossier où enregistrer les données"),
+    QString dir = QFileDialog::getExistingDirectory(this, tr("Select a destination folder for downloading data"),
                                    "",
                                    QFileDialog::ShowDirsOnly|QFileDialog::DontResolveSymlinks);
     destination_folder->setText(dir);

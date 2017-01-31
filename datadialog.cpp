@@ -1,13 +1,13 @@
-#include "datadialog.h"
+//#include "datadialog.h"
 
-DataDialog::DataDialog(): QDialog()
-{
+//DataDialog::DataDialog(): QDialog()
+//{
 
-}
+//}
 
-SelectItemsDialog::SelectItemsDialog(): QDialog()
-{
+//SelectItemsDialog::SelectItemsDialog(): QDialog()
+//{
 
-}
+//}
 
 

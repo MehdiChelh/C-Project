@@ -77,19 +77,27 @@ TrainDialog::TrainDialog(QWidget* parent, Data* _data, std::vector<unsigned int>
         mseList->hide();
         grid->addWidget(mseList, 5, 0);
 
-    test_btn = new QPushButton("Apply neural network on test dataset >", this);
+    test_btn = new QPushButton("See performance on test dataset >", this);
         test_btn -> setCursor(Qt::PointingHandCursor);
         test_btn -> hide();
         QObject::connect(test_btn, SIGNAL(clicked()), this, SLOT(Test()));
         grid->addWidget(test_btn, 6, 0);
 
+    test_groupbox = new QGroupBox(this);
+        test_groupbox->setTitle(QString("Performance on test datset"));
+        test_groupbox->hide();
+        grid -> addWidget(test_groupbox, 0, 1, 7, 1);
+
+    QVBoxLayout *test_groupbox_layout = new QVBoxLayout(test_groupbox);
+        test_groupbox->setLayout(test_groupbox_layout);
+
     testRMSEResult = new QLabel(this);
-        testRMSEResult->hide();
-        grid->addWidget(testRMSEResult, 1, 0);
+        testRMSEResult->setText("");
+        QObject::connect(test_btn, SIGNAL(clicked()), testRMSEResult, SLOT(show()));
+        test_groupbox_layout->addWidget(testRMSEResult);
 
     testResultsList = new QTreeWidget(this);
-        testResultsList->hide();
-        grid->addWidget(testResultsList, 1, 1, 6, 1);
+        test_groupbox_layout->addWidget(testResultsList);
 }
 
 
@@ -151,20 +159,20 @@ void TrainDialog::addMSEListItem(QString val)
 
 void TrainDialog::Test()
 {
+    test_groupbox->show();
     QList<QString> resultColumnsName;
     for(int i = 0; i < data->getOutputColumnsName().size(); i++){
         resultColumnsName.append("[Pred.] " + data->getOutputColumnsName()[i]);
     }
-    resultColumnsName << "RMSE";
     testResultsList->setHeaderLabels(data->getOutputColumnsName() + resultColumnsName);
     this->resize(800, 800*9/16);
-    testResultsList->show();
     TestResult result = Train_Test->Test(test_input, test_output);
 
     //On affiche le RMSE dans la fenêtre
-    QString text = "The RMSE (Root Mean Square Error) on the "
+    QString text = "The RMSE (Root Mean Square Error) value on the "
                    "test dataset is : <br/>" + QString::number(result.getRMSE());
     testRMSEResult->setText(text);
+    testResultsList->show();
 
     //On remplit le tableau affichant les valeurs prédites
     for(int i = 0; i < test_output.size(); i++){
@@ -173,7 +181,6 @@ void TrainDialog::Test()
             list << QString::number(test_output[i][k]);
         for(int k = 0; k < result.getOutputValues()[i].size(); k++)
             list << QString::number(result.getOutputValues()[i][k]);
-        list << QString::number(result.getRMSEVec()[i]);
         testResultsList->addTopLevelItem(new QTreeWidgetItem(list));
     }
 }
