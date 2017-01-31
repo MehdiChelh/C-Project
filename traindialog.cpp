@@ -61,6 +61,8 @@ TrainDialog::TrainDialog(QWidget* parent, Data* _data, std::vector<unsigned int>
     QObject::connect(traintest_btn, SIGNAL(clicked()), this, SLOT(TrainTest()));
     grid->addWidget(traintest_btn, 2, 0);
 
+    trainProgress = new QProgressBar(this);
+    grid->addWidget(trainProgress, 3, 0);
 }
 
 
@@ -79,9 +81,13 @@ void TrainDialog::TrainTest()
     qDebug() << "alpha : " << alphaQline->text().toDouble();
     qDebug() << "eta : " << etaQline->text().toDouble();
     qDebug() << "nIter : " << nIterQline->text().toDouble();
+    trainProgress->setMinimum(0);
+    trainProgress->setMaximum(nIterQline->text().toDouble()*train_input.size());
     Training_Data Train_Test;
+    QObject::connect(&Train_Test, SIGNAL(signalProgress(int)), trainProgress, SLOT(setValue(int)));
     Train_Test.Train(*topology, nIterQline->text().toDouble(), alphaQline->text().toDouble(),
                   etaQline->text().toDouble(), train_input, train_output);
+
 }
 
 

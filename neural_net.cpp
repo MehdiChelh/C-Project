@@ -170,14 +170,15 @@ void Neural_Net::Generalized_Delta_Rule(const vector<double> &targetVals, double
         }
     }
 }
-Training_Data::Training_Data()
+Training_Data::Training_Data(): QObject()
 {
 
 }
 
-void Training_Data::Train(vector<unsigned> topology, unsigned int nb_iteration_base, double val_alpha, double val_eta, std::vector<std::vector<double>> input_values, std::vector<std::vector<double>> target_values)
+void Training_Data::Train(vector<unsigned> topology, unsigned int nb_iteration_base, double val_alpha,
+                          double val_eta, std::vector<std::vector<double>> input_values,
+                          std::vector<std::vector<double>> target_values)
 {
-    qDebug() << "Train()";
     m_val_eta= val_eta;
     m_val_alpha = val_alpha;
     m_mean_error.push_back(double());
@@ -203,8 +204,9 @@ void Training_Data::Train(vector<unsigned> topology, unsigned int nb_iteration_b
             target.clear();
             input.clear();
             sum += Net.Get_Error();
+            this->progressValueChanged(nb_iteration*input_values.size() + s+1);
         };
         m_mean_error.push_back((sum)/input_values[0].size());
-        qDebug() << m_mean_error;
     };
+    qDebug() << m_mean_error;
 }

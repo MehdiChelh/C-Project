@@ -11,6 +11,7 @@
 #include <QGroupBox>
 #include <QSlider>
 #include <QPushButton>
+#include <QProgressBar>
 #include "neural_net.h"
 #include "data.h"
 #include "neural_net.h"
@@ -32,6 +33,7 @@ private:
     QSlider* slider;
     Data* data;
     std::vector<unsigned int>* topology;
+    QProgressBar* trainProgress;
 };
 
 

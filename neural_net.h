@@ -3,6 +3,7 @@
 
 #include <QObject>
 #include <QDebug>
+#include <QProgressBar>
 #include <cassert>
 #include <math.h>
 
@@ -50,11 +51,15 @@ private:
 
 
 // **************** Class Training Data ********************
-class Training_Data
+class Training_Data: public QObject
 {
+    Q_OBJECT
+signals:
+    void signalProgress(int);
 public:
     Training_Data();
     void Train(std::vector<unsigned> topology,unsigned int nb_iteration_base, double val_alpha, double val_eta, std::vector<std::vector<double>> input_values, std::vector<std::vector<double>> target_values);
+    void progressValueChanged(int val){ qDebug()<<"value : " << val; emit signalProgress(val); }
     double Get_Output_Val_Alpha(void){ return m_val_alpha; }
     double Get_Output_Val_Eta(void) { return m_val_eta; }
     std::vector<double> Get_Error(void) { return m_mean_error; }
