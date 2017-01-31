@@ -206,7 +206,7 @@ void Training_Data::Train(vector<unsigned> topology, unsigned int nb_iteration_b
             sum += Net.Get_Error();
             this->progressValueChanged(nb_iteration*input_values.size() + s+1);
         };
-        m_mean_error.push_back((sum)/input_values[0].size());
+//        m_mean_error.push_back((sum)/input_values[0].size());
+        newMSE(QStringLiteral("%1_%2").arg(nb_iteration + 1).arg((sum)/input_values[0].size()));
     };
-    qDebug() << m_mean_error;
 }

@@ -7,6 +7,7 @@
 #include <QDebug>
 #include <QList>
 #include <QByteArray>
+#include <cmath>
 
 class Data
 {

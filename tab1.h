@@ -42,7 +42,7 @@ class Tab1 : public QWidget
 public:
     Tab1();
     ~Tab1();
-    QList<QString> static selectItemsDialog(QString title, QList<QString> items);
+    QList<QString> static selectItemsDialog(QString title, QString label, QList<QString> items);
 public slots:
     void resetInputFormNeurons();
     void loadCustomData();

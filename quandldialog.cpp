@@ -88,9 +88,9 @@ void QuandlDialog::download()
     this->close();
     QList<QByteArray> columns = data->getColumnsOfCSV(pathToCSV);
     QList<QString> col = Data::byteArraysToStrings(columns);
-    QList<QString> inputColumns = Tab1::selectItemsDialog("Select input labels", col);
+    QList<QString> inputColumns = Tab1::selectItemsDialog("Select input labels", "Select the label(s) that you want to use as input variables in your model", col);
     inputColumns.removeAll("Date");
-    QList<QString> outputColumns = Tab1::selectItemsDialog("Select output labels", col);
+    QList<QString> outputColumns = Tab1::selectItemsDialog("Select output labels", "Select the label(s) that you want to use as output variables in your model", col);
     outputColumns.removeAll("Date");
 
     if(outputColumns.length() >= 1){

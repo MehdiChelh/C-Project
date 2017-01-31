@@ -7,6 +7,9 @@ Tab1::Tab1() : QWidget()
     grid = new QGridLayout(this);
     this->setLayout(grid);
 
+    grid->setColumnMinimumWidth(0, 200);
+    grid->setColumnMinimumWidth(1, 200);
+
 
     //Widget permettant d'afficher les données
     table = new TableWidget(data, this);
@@ -71,9 +74,9 @@ Tab1::Tab1() : QWidget()
     QHBoxLayout *manage_layers_layout = new QHBoxLayout(manage_layers);
     manage_layers->setLayout(manage_layers_layout);
 
-    QLabel *labelNeurons = new QLabel(this);
-    labelNeurons->setText("Ajouter une couche :");
-    manage_layers_layout->addWidget(labelNeurons);
+//    QLabel *labelNeurons = new QLabel(this);
+//    labelNeurons->setText("Ajouter une couche :");
+//    manage_layers_layout->addWidget(labelNeurons);
 
 
     //Input pour le nombre de neurones du NN à ajouter
@@ -135,9 +138,9 @@ void Tab1::loadCustomData()
         QMessageBox::information(this, "Fichier", "Vous avez sélectionné :\n" + pathToCSV.split("/").last());
         QList<QByteArray> columns = data->getColumnsOfCSV(pathToCSV);
         QList<QString> col = Data::byteArraysToStrings(columns);
-        QList<QString> dateColumnLabel = selectItemsDialog("Select date label", col);
-        QList<QString> inputColumns = selectItemsDialog("Select input labels", col);
-        QList<QString> outputColumns = selectItemsDialog("Select output labels", col);
+        QList<QString> dateColumnLabel = selectItemsDialog("Select date label", "Select the label associate with the date of your time serie. If your data is not a time serie just click the button bellow without selecting any label.",  col);
+        QList<QString> inputColumns = selectItemsDialog("Select input labels", "Select the label(s) that you want to use as input variables in your model", col);
+        QList<QString> outputColumns = selectItemsDialog("Select output labels", "Select the label(s) that you want to use as output variables in your model", col);
         if(dateColumnLabel.length() == 0)
             dateColumnLabel.append("");
         if(dateColumnLabel.length() == 1 && outputColumns.length() >= 1){
@@ -154,8 +157,6 @@ void Tab1::loadCustomData()
 
 void Tab1::selectData()
 {
-//    QStringList items;
-//    items << tr("Sélectionner le type de données") << tr("Financières avec l'API Quandl") << tr("NOAA");
     QDialog *dialog = new QDialog();
     dialog->setWindowTitle(QString("Selection les données"));
     QHBoxLayout *grid = new QHBoxLayout();
@@ -201,21 +202,23 @@ void Tab1::DataPreprocessDialog()
     qDebug() << result;*/
 }
 
-QList<QString> Tab1::selectItemsDialog(QString title, QList<QString> items)
+QList<QString> Tab1::selectItemsDialog(QString title, QString stringLabel, QList<QString> items)
 {
     QDialog* selectColumnsDialog = new QDialog();
     selectColumnsDialog->setWindowTitle(title);
     QGridLayout* dialogGrid = new QGridLayout(selectColumnsDialog);
     selectColumnsDialog->setLayout(dialogGrid);
-    QListWidget* listWidget = new QListWidget();
+    QLabel* label = new QLabel(stringLabel, selectColumnsDialog);
+    dialogGrid->addWidget(label, 0, 0);
+    QListWidget* listWidget = new QListWidget(selectColumnsDialog);
     for(int i = 0; i < items.length(); i++){
         listWidget->addItem(items[i]);
     }
     listWidget->setSelectionMode(QAbstractItemView::ExtendedSelection);
-    dialogGrid->addWidget(listWidget, 0, 0);
+    dialogGrid->addWidget(listWidget, 1, 0);
     QPushButton* close_button = new QPushButton("Select", selectColumnsDialog);
     QObject::connect(close_button, SIGNAL(clicked()), selectColumnsDialog, SLOT(close()));
-    dialogGrid->addWidget(close_button, 1, 0);
+    dialogGrid->addWidget(close_button, 2, 0);
     if(selectColumnsDialog->exec() == QDialog::Accepted){
         //La condition dans le if permet d'attendre la fermeture de la boit de dialogue
         qDebug() << "DialogCode : Accepted";

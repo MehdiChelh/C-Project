@@ -17,7 +17,7 @@ TrainDialog::TrainDialog(QWidget* parent, Data* _data, std::vector<unsigned int>
     settings->setLayout(groupBoxGrid);
     grid->addWidget(settings, 0, 0);
 
-    QLabel* alphaLabel = new QLabel("ALpha : ", this);
+    QLabel* alphaLabel = new QLabel("Alpha : ", this);
         groupBoxGrid->addWidget(alphaLabel, 0, 0);
     alphaQline = new QLineEdit(this);
         groupBoxGrid->addWidget(alphaQline, 0, 1);
@@ -69,7 +69,6 @@ TrainDialog::TrainDialog(QWidget* parent, Data* _data, std::vector<unsigned int>
 
     trainProgress = new QProgressBar(this);
     trainProgress->hide();
-    QObject::connect(traintest_btn, SIGNAL(clicked()), trainProgress, SLOT(show()));
     grid->addWidget(trainProgress, 4, 0);
 
     mseList = new QTreeWidget(this);
@@ -77,19 +76,22 @@ TrainDialog::TrainDialog(QWidget* parent, Data* _data, std::vector<unsigned int>
     list << QString("Iteration") << QString("MSE");
     mseList->setHeaderItem(new QTreeWidgetItem(list));
     mseList->hide();
-    QObject::connect(traintest_btn, SIGNAL(clicked()), mseList, SLOT(show()));
     grid->addWidget(mseList, 5, 0);
 }
 
 
 void TrainDialog::TrainTest()
 {
+    mseList->clear();
+    trainProgress->setValue(0);
     QMessageBox* message;
     if(topology->size() > 0 && data->getInput().size() > 0 && data->getOutput().size()){
         if((*topology)[0] == data->getInput()[0].size())
         {
-            if((*topology)[topology->back()] == data->getOutput()[0].size()){
+            if((*topology)[topology->size()-1] == data->getOutput()[0].size()){
                 if(alphaQline->text().toDouble() > 0 && etaQline->text().toDouble() > 0 && nIterQline->text().toDouble() > 0){
+                    trainProgress->show();
+                    mseList->show();
                     double split_value = slider->value();
                     std::vector<std::vector<std::vector<double>>> train_test_data = data->splitData(split_value);
                     //On normalise les données :
@@ -99,12 +101,14 @@ void TrainDialog::TrainTest()
                     std::vector<std::vector<double>> train_output = train_test_data[1];
                     std::vector<std::vector<double>> test_input = train_test_data[2];
                     std::vector<std::vector<double>> test_output = train_test_data[3];
+                    qDebug() << "Train input size : " << train_input.size();
 
                     //On paramètre la barre de progression de l'avancement du learning :
                     trainProgress->setMinimum(0);
                     trainProgress->setMaximum(nIterQline->text().toDouble()*train_input.size());
                     Training_Data Train_Test;
                     QObject::connect(&Train_Test, SIGNAL(signalProgress(int)), trainProgress, SLOT(setValue(int)));
+                    QObject::connect(&Train_Test, SIGNAL(signalMSE(QString)), this, SLOT(addMSEListItem(QString)));
                     Train_Test.Train(*topology, nIterQline->text().toDouble(), alphaQline->text().toDouble(),
                                   etaQline->text().toDouble(), train_input, train_output);
                 }else{
@@ -125,9 +129,9 @@ void TrainDialog::TrainTest()
     }
 }
 
-void TrainDialog::addMSEListItem(double val)
+void TrainDialog::addMSEListItem(QString val)
 {
-    mseList->addTopLevelItem(new QTreeWidgetItem(QStringList(QString::number(val))));
+    mseList->addTopLevelItem(new QTreeWidgetItem(val.split("_")));
 }
 
 

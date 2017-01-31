@@ -9,12 +9,12 @@ Window::Window() : QTabWidget()
     resize(width, height);
 
     tab1 = new Tab1();
-    const QString label ="Train";
+    const QString label ="Train/Test";
     this->addTab(tab1, label);
 
-    tab2 = new Tab2();
-    const QString label2 ="Test";
-    this->addTab(tab2, label2);
+//    tab2 = new Tab2();
+//    const QString label2 ="Test";
+//    this->addTab(tab2, label2);
 
 }
 

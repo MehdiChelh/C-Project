@@ -28,7 +28,7 @@ public:
 public slots:
     void Test();
     void TrainTest();
-    void addMSEListItem(double);
+    void addMSEListItem(QString);
 private:
     QLineEdit* alphaQline;
     QLineEdit* etaQline;

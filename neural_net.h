@@ -56,10 +56,12 @@ class Training_Data: public QObject
     Q_OBJECT
 signals:
     void signalProgress(int);
+    void signalMSE(QString);
 public:
     Training_Data();
     void Train(std::vector<unsigned> topology,unsigned int nb_iteration_base, double val_alpha, double val_eta, std::vector<std::vector<double>> input_values, std::vector<std::vector<double>> target_values);
-    void progressValueChanged(int val){ qDebug()<<"value : " << val; emit signalProgress(val); }
+    void progressValueChanged(int val){ emit signalProgress(val); }
+    void newMSE(QString val){ emit signalMSE(val); }
     double Get_Output_Val_Alpha(void){ return m_val_alpha; }
     double Get_Output_Val_Eta(void) { return m_val_eta; }
     std::vector<double> Get_Error(void) { return m_mean_error; }

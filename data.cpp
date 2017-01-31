@@ -164,14 +164,12 @@ void Data::normalizeData(std::vector<std::vector<std::vector<double>>>* _train_t
     std::vector<std::vector<std::vector<double>>> train_test = *_train_test;
     double max[4] = {train_test[0][0][0], train_test[1][0][0], train_test[2][0][0], train_test[3][0][0]};
     for(int k = 0; k < train_test.size(); k++){
-//        double max = train_test[k][0][0];
         for(int i = 0; i < train_test[k].size(); i++){
              for(int j = 0; j < train_test[k][i].size(); j++){
-                 if(train_test[k][i][j] > max[k])
-                     max[k] = train_test[k][i][j];
+                 if(fabs(train_test[k][i][j]) > max[k])
+                     max[k] = fabs(train_test[k][i][j]);
              }
         }
-        qDebug() << k << " " << max[k];
     }
     for(int k = 0; k < train_test.size(); k++){
         for(int i = 0; i < train_test[k].size(); i++){
