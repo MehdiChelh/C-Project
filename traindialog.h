@@ -21,7 +21,7 @@ class TrainDialog: public QDialog
 {
     Q_OBJECT
 public:
-    TrainDialog(QWidget* parent, Data* data, std::vector<unsigned int> topology);
+    TrainDialog(QWidget* parent, Data* data, std::vector<unsigned int>* topology);
 public slots:
     void Test();
     void TrainTest();
@@ -31,7 +31,7 @@ private:
     QLineEdit* nIterQline;
     QSlider* slider;
     Data* data;
-    std::vector<unsigned int> topology;
+    std::vector<unsigned int>* topology;
 };
 
 

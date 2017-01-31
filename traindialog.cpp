@@ -1,6 +1,6 @@
 #include "traindialog.h"
 
-TrainDialog::TrainDialog(QWidget* parent, Data* _data, std::vector<unsigned int> _topology): QDialog(parent)
+TrainDialog::TrainDialog(QWidget* parent, Data* _data, std::vector<unsigned int>* _topology): QDialog(parent)
 {
     data = _data;
     topology = _topology;
@@ -80,7 +80,7 @@ void TrainDialog::TrainTest()
     qDebug() << "eta : " << etaQline->text().toDouble();
     qDebug() << "nIter : " << nIterQline->text().toDouble();
     Training_Data Train_Test;
-    Train_Test.Train(topology, nIterQline->text().toDouble(), alphaQline->text().toDouble(),
+    Train_Test.Train(*topology, nIterQline->text().toDouble(), alphaQline->text().toDouble(),
                   etaQline->text().toDouble(), train_input, train_output);
 }
 

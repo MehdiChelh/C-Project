@@ -188,6 +188,7 @@ void Training_Data::Train(vector<unsigned> topology, unsigned int nb_iteration_b
     vector<double> input;
     vector<double> target;
     for (unsigned nb_iteration = 0; nb_iteration < nb_iteration_base;++nb_iteration) {
+        sum = 0.0;
         for (unsigned s = 0; s < input_values.size(); ++s) {
             for (unsigned nb_input = 0; nb_input < input_values[0].size(); ++nb_input)
             {
@@ -204,5 +205,6 @@ void Training_Data::Train(vector<unsigned> topology, unsigned int nb_iteration_b
             sum += Net.Get_Error();
         };
         m_mean_error.push_back((sum)/input_values[0].size());
+        qDebug() << m_mean_error;
     };
 }

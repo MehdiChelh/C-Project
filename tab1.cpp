@@ -96,8 +96,8 @@ Tab1::Tab1() : QWidget()
     //Bouton pour supprimer la dernière couche du NN
     pop_layer_button = new QPushButton("Supprimer le dernier layer");
     pop_layer_button -> setCursor(Qt::PointingHandCursor);
-    pop_layer_button->setDisabled(paintWidget->getNNlayers().size() == 0);
-    qDebug() << paintWidget->getNNlayers().size();
+    pop_layer_button->setDisabled(paintWidget->getNNlayers()->size() == 0);
+    qDebug() << paintWidget->getNNlayers()->size();
     QObject::connect(pop_layer_button, SIGNAL(clicked()), paintWidget, SLOT(popLayer()));
     QObject::connect(pop_layer_button, SIGNAL(clicked()), this, SLOT(enablingDisablingButtons()));
     manage_layers_layout -> addWidget(pop_layer_button);
@@ -124,8 +124,8 @@ void Tab1::resetInputFormNeurons(){
     inputFormNeurons->clear();
 }
 void Tab1::enablingDisablingButtons(){
-    pop_layer_button->setEnabled(paintWidget->getNNlayers().size() > 0);
-    learning_button->setEnabled(paintWidget->getNNlayers().size() > 0 && data->isFilled());
+    pop_layer_button->setEnabled(paintWidget->getNNlayers()->size() > 0);
+    learning_button->setEnabled(paintWidget->getNNlayers()->size() > 0 && data->isFilled());
 }
 void Tab1::loadCustomData()
 {
