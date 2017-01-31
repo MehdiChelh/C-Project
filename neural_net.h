@@ -15,7 +15,7 @@ class Neural_Net
 public:
     Neural_Net(const std::vector<unsigned> &topology);
     void Feed_Forward(const std::vector<double> &inputVals);
-    void Generalized_Delta_Rule(const std::vector<double> &targetVals);
+    void Generalized_Delta_Rule(const std::vector<double> &targetVals, double alpha, double eta);
     void Get_Results(std::vector<double> &resultVals) ;
     double Get_Error() { return m_error; }
 
@@ -35,7 +35,7 @@ public:
     void Feed_Forward(const Layer &prevLayer);
     void Calc_Output_Grad(double targetVal);
     void Calc_Hidden_Grad(const Layer &nextLayer);
-    void update_input_weights(Layer &prevLayer);
+    void update_input_weights(Layer &prevLayer, double alpha, double eta);
     static double eta;   // [0.0..1.0] overall Neural_Net training rate
     static double alpha; // [0.0..n] multiplier of last weight change (momentum)
 
@@ -48,6 +48,26 @@ private:
     double m_delta;
 };
 
+
+// **************** Class Training Data ********************
+class Training_Data
+{
+public:
+    Training_Data();
+    void Train(std::vector<unsigned> topology,unsigned int nb_iteration_base, double val_alpha, double val_eta, std::vector<std::vector<double>> input_values, std::vector<std::vector<double>> target_values);
+    double Get_Output_Val_Alpha(void){ return m_val_alpha; }
+    double Get_Output_Val_Eta(void) { return m_val_eta; }
+    std::vector<double> Get_Error(void) { return m_mean_error; }
+    std::vector<std::vector<double>> Get_Output_Val(void) {
+        return m_result_value
+            ;
+    }
+private:
+    std::vector<double> m_mean_error;
+    double m_val_alpha;
+    double m_val_eta;
+    std::vector<std::vector<double>> m_result_value;
+};
 
 
 #endif // NEURAL_NET_H

@@ -131,7 +131,7 @@ void DrawNN::getNumberOfNeurons(QString _entry)
 {
     number_of_neurons_for_new_layer = _entry.toInt();
 }
-std::vector <int> DrawNN::getNNlayers()
+std::vector <unsigned int> DrawNN::getNNlayers()
 {
     return NNlayers;
 }

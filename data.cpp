@@ -44,6 +44,10 @@ void Data::openCSV(QString pathToCSV, QList<QString> selectedInputColumns, QStri
     QList<int> selectedInputIndices;
     QList<int> selectedOutputIndices;
 
+    input.clear();
+    output.clear();
+    date.clear();
+
     QFile file(pathToCSV);
     if (!file.open(QIODevice::ReadOnly)) {
         qDebug() << file.errorString();
@@ -51,10 +55,12 @@ void Data::openCSV(QString pathToCSV, QList<QString> selectedInputColumns, QStri
 
 
     input_col_names = selectedInputColumns;
-    input_col_names.removeAll(dateLabel);
+    if(dateLabel != "")
+        input_col_names.removeAll(dateLabel);
 
     output_col_names = outputColumns;
-    output_col_names.removeAll(dateLabel);
+    if(dateLabel != "")
+        output_col_names.removeAll(dateLabel);
 
     QList<QByteArray> lines = file.readAll().split('\n');
     //On récupère les indices des colones choisies comme input
@@ -67,6 +73,7 @@ void Data::openCSV(QString pathToCSV, QList<QString> selectedInputColumns, QStri
         if(dateLabel == entete[i])
         {
             dateIndice = i;
+            qDebug() << "dateIndice" << dateIndice;
         }
 
         if(output_col_names.contains(entete[i]) && entete[i] != dateLabel){
@@ -90,7 +97,8 @@ void Data::openCSV(QString pathToCSV, QList<QString> selectedInputColumns, QStri
             Q_FOREACH (const int& indice, selectedOutputIndices){
                 vecOutput.push_back(liste[indice].toDouble());
             }
-            date.push_back(liste[dateIndice]);
+            if(dateLabel != "")
+                date.push_back(liste[dateIndice]);
             input.push_back(vecInput);
             output.push_back(vecOutput);
         }
@@ -136,6 +144,44 @@ void Data::shiftColumn(QString column_name)
     output.pop_back();
 }
 
+std::vector<std::vector<std::vector<double>>> Data::splitData(int split_value)
+{
+    std::vector<std::vector<std::vector<double>>> res;
+    int train_size = std::max((int)1, std::min((int)(input.size() - 1), (int)(input.size()*split_value/100.0)));
+    std::vector<std::vector<double>> train_input(input.begin(), input.begin() + train_size);
+    std::vector<std::vector<double>> train_output(output.begin(), output.begin() + train_size);
+    std::vector<std::vector<double>> test_input(input.begin() + train_size, input.end());
+    std::vector<std::vector<double>> test_output(output.begin() + train_size, output.end());
+    res.push_back(train_input);
+    res.push_back(train_output);
+    res.push_back(test_input);
+    res.push_back(test_output);
+    return res;
+}
+
+void Data::normalizeData(std::vector<std::vector<std::vector<double>>>* _train_test)
+{
+    std::vector<std::vector<std::vector<double>>> train_test = *_train_test;
+    double max[4] = {train_test[0][0][0], train_test[1][0][0], train_test[2][0][0], train_test[3][0][0]};
+    for(int k = 0; k < train_test.size(); k++){
+//        double max = train_test[k][0][0];
+        for(int i = 0; i < train_test[k].size(); i++){
+             for(int j = 0; j < train_test[k][i].size(); j++){
+                 if(train_test[k][i][j] > max[k])
+                     max[k] = train_test[k][i][j];
+             }
+        }
+        qDebug() << k << " " << max[k];
+    }
+    for(int k = 0; k < train_test.size(); k++){
+        for(int i = 0; i < train_test[k].size(); i++){
+            for(int j = 0; j < train_test[k][i].size(); j++){
+                train_test[k][i][j] = train_test[k][i][j]/max[k];
+            }
+        }
+    }
+    *_train_test = train_test;
+}
 
 QList<QString> Data::getDate(){
     return date;

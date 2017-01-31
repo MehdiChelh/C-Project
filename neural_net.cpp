@@ -1,7 +1,7 @@
 #include "neural_net.h"
 
-double Neuron::eta = 0.15;    // overall Neural_Net learning rate, [0.0..1.0]
-double Neuron::alpha = 0.5;   // momentum, multiplier of last deltaWeight, [0.0..1.0]
+//double Neuron::eta = 0.15;    // overall Neural_Net learning rate, [0.0..1.0]
+//double Neuron::alpha = 0.5;   // momentum, multiplier of last deltaWeight, [0.0..1.0]
 
 using namespace std;
 
@@ -52,7 +52,7 @@ void Neuron::Calc_Hidden_Grad(const Layer &nextLayer)
     m_delta = sum * (1 - (m_output_value*m_output_value));
 }
 
-void Neuron::update_input_weights(Layer &prevLayer)
+void Neuron::update_input_weights(Layer &prevLayer, double alpha, double eta)
 {
     // The weights to be updated are in the Connection container
     // in the neurons in the preceding layer
@@ -127,7 +127,7 @@ void Neural_Net::Feed_Forward(const vector<double> &inputVals)
     }
 }
 
-void Neural_Net::Generalized_Delta_Rule(const vector<double> &targetVals)
+void Neural_Net::Generalized_Delta_Rule(const vector<double> &targetVals, double alpha, double eta)
 {
     // Calculate overall Neural_Net error (RMS of output neuron errors)
 
@@ -166,7 +166,43 @@ void Neural_Net::Generalized_Delta_Rule(const vector<double> &targetVals)
         Layer &prevLayer = m_id_layer_neuron[layerNum - 1];
 
         for (unsigned n = 0; n < layer.size() - 1; ++n) {
-            layer[n].update_input_weights(prevLayer);
+            layer[n].update_input_weights(prevLayer, alpha, eta);
         }
     }
+}
+Training_Data::Training_Data()
+{
+
+}
+
+void Training_Data::Train(vector<unsigned> topology, unsigned int nb_iteration_base, double val_alpha, double val_eta, std::vector<std::vector<double>> input_values, std::vector<std::vector<double>> target_values)
+{
+    qDebug() << "Train()";
+    m_val_eta= val_eta;
+    m_val_alpha = val_alpha;
+    m_mean_error.push_back(double());
+    Neural_Net Net(topology);
+    double sum = 0.0;
+    vector<double> result_value;
+    vector<vector<double>> result_values;
+    vector<double> input;
+    vector<double> target;
+    for (unsigned nb_iteration = 0; nb_iteration < nb_iteration_base;++nb_iteration) {
+        for (unsigned s = 0; s < input_values.size(); ++s) {
+            for (unsigned nb_input = 0; nb_input < input_values[0].size(); ++nb_input)
+            {
+                input.push_back(input_values[s][nb_input]);
+                target.push_back(input_values[s][nb_input]);
+
+            };
+            Net.Feed_Forward(input);
+            Net.Get_Results(result_value);
+            m_result_value.push_back(result_value);
+            Net.Generalized_Delta_Rule(target,val_alpha,val_eta);
+            target.clear();
+            input.clear();
+            sum += Net.Get_Error();
+        };
+        m_mean_error.push_back((sum)/input_values[0].size());
+    };
 }

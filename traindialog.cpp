@@ -1,7 +1,11 @@
 #include "traindialog.h"
 
-TrainDialog::TrainDialog(QWidget* parent): QDialog(parent)
+TrainDialog::TrainDialog(QWidget* parent, Data* _data, std::vector<unsigned int> _topology): QDialog(parent)
 {
+    data = _data;
+    topology = _topology;
+    qDebug() << topology;
+
     this->setWindowTitle("Train and test");
 
     QGridLayout* grid = new QGridLayout(this);
@@ -11,21 +15,21 @@ TrainDialog::TrainDialog(QWidget* parent): QDialog(parent)
     settings->setTitle(QString("Settings of the learning :"));
     QGridLayout* groupBoxGrid = new QGridLayout(settings);
     settings->setLayout(groupBoxGrid);
-    grid->addWidget(settings, 0, 0, 1, 2);
+    grid->addWidget(settings, 0, 0);
 
     QLabel* alphaLabel = new QLabel("ALpha : ", this);
         groupBoxGrid->addWidget(alphaLabel, 0, 0);
-    QLineEdit* alphaQline = new QLineEdit(this);
+    alphaQline = new QLineEdit(this);
         groupBoxGrid->addWidget(alphaQline, 0, 1);
 
     QLabel* etaLabel = new QLabel("Eta : ", this);
         groupBoxGrid->addWidget(etaLabel, 1, 0);
-    QLineEdit* etaQline = new QLineEdit(this);
+    etaQline = new QLineEdit(this);
         groupBoxGrid->addWidget(etaQline, 1, 1);
 
     QLabel* nIterLabel = new QLabel("Nombre d'itérations : ", this);
         groupBoxGrid->addWidget(nIterLabel, 2, 0);
-    QLineEdit* nIterQline = new QLineEdit(this);
+    nIterQline = new QLineEdit(this);
         groupBoxGrid->addWidget(nIterQline, 2, 1);
 
 
@@ -33,24 +37,54 @@ TrainDialog::TrainDialog(QWidget* parent): QDialog(parent)
     settings2->setTitle(QString("Splitting the dataset between train and test :"));
     QGridLayout* groupBoxGrid2 = new QGridLayout(settings2);
     settings2->setLayout(groupBoxGrid2);
-    grid->addWidget(settings2, 1, 0, 1, 2);
+    grid->addWidget(settings2, 1, 0);
 
     TrainTestLabel* label = new TrainTestLabel(this);
     groupBoxGrid2->addWidget(label, 1, 0);
 
-    QSlider* slider = new QSlider(Qt::Horizontal, this);
+    slider = new QSlider(Qt::Horizontal, this);
     slider->setTickInterval(100);
     slider->setValue(50);
     slider->setMinimum(1);
     QObject::connect(slider, SIGNAL(valueChanged(int)), label, SLOT(setCustomText(int)));
-    groupBoxGrid2->addWidget(slider, 1, 1);
-
+    groupBoxGrid2->addWidget(slider, 2, 0);
     int train = slider->value();
     QString labelText = "<b>Train/Test : </b>";
     labelText.append(QStringLiteral("%1/%2").arg(train).arg(100-train));
     label->setText(labelText);
 
+
+
+
+    QPushButton* traintest_btn = new QPushButton("TRAIIIIN MOTHERFUCKER !", this);
+    traintest_btn -> setCursor(Qt::PointingHandCursor);
+    QObject::connect(traintest_btn, SIGNAL(clicked()), this, SLOT(TrainTest()));
+    grid->addWidget(traintest_btn, 2, 0);
+
 }
+
+
+void TrainDialog::TrainTest()
+{
+    double split_value = slider->value();
+    std::vector<std::vector<std::vector<double>>> train_test_data = data->splitData(split_value);
+    qDebug() << "normalization";
+    Data::normalizeData(&train_test_data);
+    std::vector<std::vector<double>> train_input = train_test_data[0];
+    std::vector<std::vector<double>> train_output = train_test_data[1];
+    std::vector<std::vector<double>> test_input = train_test_data[2];
+    std::vector<std::vector<double>> test_output = train_test_data[3];
+    qDebug() << train_input.size();
+    qDebug() << "topo : " << topology;
+    qDebug() << "alpha : " << alphaQline->text().toDouble();
+    qDebug() << "eta : " << etaQline->text().toDouble();
+    qDebug() << "nIter : " << nIterQline->text().toDouble();
+    Training_Data Train_Test;
+    Train_Test.Train(topology, nIterQline->text().toDouble(), alphaQline->text().toDouble(),
+                  etaQline->text().toDouble(), train_input, train_output);
+}
+
+
 void TrainDialog::Test()
 {
     vector<unsigned int> topo;
@@ -81,7 +115,7 @@ void TrainDialog::Test()
         input_vals[1] = Xor[i];
         My_Neural_Net.Feed_Forward(input_vals);
         My_Neural_Net.Get_Results(result_vals);
-        My_Neural_Net.Generalized_Delta_Rule(target_vals);
+        My_Neural_Net.Generalized_Delta_Rule(target_vals, 0.8, 0.3);
 
         qDebug() << "valeur predite: ";
         qDebug() << result_vals[0] << "\n";

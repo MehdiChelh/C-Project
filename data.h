@@ -24,6 +24,8 @@ public:
     bool isFilled() {return (input.size() > 0);}
     void duplicateColumn(QString column_name);
     void shiftColumn(QString column_name);
+    std::vector<std::vector<std::vector<double>>> splitData(int split_value);
+    void static normalizeData(std::vector<std::vector<std::vector<double>>>* train_test_data);
 private:
     QList<QString> input_col_names;
     QList<QString> output_col_names;

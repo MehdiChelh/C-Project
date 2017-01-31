@@ -10,6 +10,8 @@ TableWidget::TableWidget(Data* data, QWidget* parent) : QTableWidget(parent)
 
 void TableWidget::fill(Data* data)
 {
+    this->clear();
+
     QList<QString> input_col_names = data->getInputColumnsName();
     QList<QString> output_col_names = data->getOutputColumnsName();
     qDebug() << output_col_names;
@@ -27,7 +29,7 @@ void TableWidget::fill(Data* data)
         this->setHorizontalHeaderItem(i, new QTableWidgetItem(QString(input_col_names[i])));
     for(int i = 0; i < output_col_names.length(); i ++)
         this->setHorizontalHeaderItem(i + input_col_names.length(), new QTableWidgetItem(QString(output_col_names[i])));
-    for(int i = 0; i < input.size(); i ++)
+    for(int i = 0; i < date.size(); i ++)
         this->setVerticalHeaderItem(i, new QTableWidgetItem(QString(date[i])));
     for(int i = 0; i < input.size(); i++){
         for(int j = 0; j < input[i].size(); j++){

@@ -52,6 +52,7 @@ public slots:
     void QuandlDialog();
     void duplicateColumn();
     void shiftColumn();
+    //void trainDialog();
 private:
     QGridLayout *grid;
     QPushButton *load_data_button;

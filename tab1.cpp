@@ -116,7 +116,7 @@ Tab1::Tab1() : QWidget()
     learning_button -> setCursor(Qt::PointingHandCursor);
 //    learning_button -> setDisabled(true);
     learning_button -> setDisabled(false);
-    TrainDialog *tesst = new TrainDialog(this);
+    TrainDialog *tesst = new TrainDialog(this, data, paintWidget->getNNlayers());
     QObject::connect(learning_button, SIGNAL(clicked()), tesst, SLOT(show()));
     grid -> addWidget(learning_button, 4, 5);
 }
@@ -138,6 +138,8 @@ void Tab1::loadCustomData()
         QList<QString> dateColumnLabel = selectItemsDialog("Select date label", col);
         QList<QString> inputColumns = selectItemsDialog("Select input labels", col);
         QList<QString> outputColumns = selectItemsDialog("Select output labels", col);
+        if(dateColumnLabel.length() == 0)
+            dateColumnLabel.append("");
         if(dateColumnLabel.length() == 1 && outputColumns.length() >= 1){
             data->openCSV(pathToCSV, inputColumns, dateColumnLabel[0], outputColumns);
             table->fill(data);
