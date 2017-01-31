@@ -61,33 +61,73 @@ TrainDialog::TrainDialog(QWidget* parent, Data* _data, std::vector<unsigned int>
     QObject::connect(traintest_btn, SIGNAL(clicked()), this, SLOT(TrainTest()));
     grid->addWidget(traintest_btn, 2, 0);
 
+    QLabel* progression = new QLabel(this);
+    progression->setText("Progression : ");
+    progression->hide();
+    QObject::connect(traintest_btn, SIGNAL(clicked()), progression, SLOT(show()));
+    grid->addWidget(progression, 3, 0);
+
     trainProgress = new QProgressBar(this);
-    grid->addWidget(trainProgress, 3, 0);
+    trainProgress->hide();
+    QObject::connect(traintest_btn, SIGNAL(clicked()), trainProgress, SLOT(show()));
+    grid->addWidget(trainProgress, 4, 0);
+
+    mseList = new QTreeWidget(this);
+    QStringList list;
+    list << QString("Iteration") << QString("MSE");
+    mseList->setHeaderItem(new QTreeWidgetItem(list));
+    mseList->hide();
+    QObject::connect(traintest_btn, SIGNAL(clicked()), mseList, SLOT(show()));
+    grid->addWidget(mseList, 5, 0);
 }
 
 
 void TrainDialog::TrainTest()
 {
-    double split_value = slider->value();
-    std::vector<std::vector<std::vector<double>>> train_test_data = data->splitData(split_value);
-    qDebug() << "normalization";
-    Data::normalizeData(&train_test_data);
-    std::vector<std::vector<double>> train_input = train_test_data[0];
-    std::vector<std::vector<double>> train_output = train_test_data[1];
-    std::vector<std::vector<double>> test_input = train_test_data[2];
-    std::vector<std::vector<double>> test_output = train_test_data[3];
-    qDebug() << train_input.size();
-    qDebug() << "topo : " << topology;
-    qDebug() << "alpha : " << alphaQline->text().toDouble();
-    qDebug() << "eta : " << etaQline->text().toDouble();
-    qDebug() << "nIter : " << nIterQline->text().toDouble();
-    trainProgress->setMinimum(0);
-    trainProgress->setMaximum(nIterQline->text().toDouble()*train_input.size());
-    Training_Data Train_Test;
-    QObject::connect(&Train_Test, SIGNAL(signalProgress(int)), trainProgress, SLOT(setValue(int)));
-    Train_Test.Train(*topology, nIterQline->text().toDouble(), alphaQline->text().toDouble(),
-                  etaQline->text().toDouble(), train_input, train_output);
+    QMessageBox* message;
+    if(topology->size() > 0 && data->getInput().size() > 0 && data->getOutput().size()){
+        if((*topology)[0] == data->getInput()[0].size())
+        {
+            if((*topology)[topology->back()] == data->getOutput()[0].size()){
+                if(alphaQline->text().toDouble() > 0 && etaQline->text().toDouble() > 0 && nIterQline->text().toDouble() > 0){
+                    double split_value = slider->value();
+                    std::vector<std::vector<std::vector<double>>> train_test_data = data->splitData(split_value);
+                    //On normalise les données :
+                    Data::normalizeData(&train_test_data);
+                    //On stock les jeux de données d'entrainement et de test dans dans vector différents
+                    std::vector<std::vector<double>> train_input = train_test_data[0];
+                    std::vector<std::vector<double>> train_output = train_test_data[1];
+                    std::vector<std::vector<double>> test_input = train_test_data[2];
+                    std::vector<std::vector<double>> test_output = train_test_data[3];
 
+                    //On paramètre la barre de progression de l'avancement du learning :
+                    trainProgress->setMinimum(0);
+                    trainProgress->setMaximum(nIterQline->text().toDouble()*train_input.size());
+                    Training_Data Train_Test;
+                    QObject::connect(&Train_Test, SIGNAL(signalProgress(int)), trainProgress, SLOT(setValue(int)));
+                    Train_Test.Train(*topology, nIterQline->text().toDouble(), alphaQline->text().toDouble(),
+                                  etaQline->text().toDouble(), train_input, train_output);
+                }else{
+                    message = new QMessageBox(QMessageBox::Warning, "Error", "Alpha, eta and the number of iterations can't be null.");
+                    message->show();
+                }
+            }else{
+                message = new QMessageBox(QMessageBox::Warning, "Error", "The number of neurons on the output layer should be the same as the number of output variables.");
+                message->show();
+            }
+        }else{
+            message = new QMessageBox(QMessageBox::Warning, "Error", "The number of neurons on the input layer should be the same as the number of input variables.");
+            message->show();
+        }
+    }else{
+        message = new QMessageBox(QMessageBox::Warning, "Error", "You have to choose input and output data and a neural network topology.");
+        message->show();
+    }
+}
+
+void TrainDialog::addMSEListItem(double val)
+{
+    mseList->addTopLevelItem(new QTreeWidgetItem(QStringList(QString::number(val))));
 }
 
 
@@ -128,7 +168,6 @@ void TrainDialog::Test()
         target_vals.clear();
     };
 }
-
 
 TrainTestLabel::TrainTestLabel(QWidget* parent): QLabel(parent)
 {

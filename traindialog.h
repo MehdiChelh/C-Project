@@ -12,6 +12,8 @@
 #include <QSlider>
 #include <QPushButton>
 #include <QProgressBar>
+#include <QTreeWidget>
+#include <QMessageBox>
 #include "neural_net.h"
 #include "data.h"
 #include "neural_net.h"
@@ -26,14 +28,16 @@ public:
 public slots:
     void Test();
     void TrainTest();
+    void addMSEListItem(double);
 private:
     QLineEdit* alphaQline;
     QLineEdit* etaQline;
     QLineEdit* nIterQline;
     QSlider* slider;
+    QProgressBar* trainProgress;
+    QTreeWidget* mseList;
     Data* data;
     std::vector<unsigned int>* topology;
-    QProgressBar* trainProgress;
 };
 
 
