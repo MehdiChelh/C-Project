@@ -56,20 +56,6 @@ Tab1::Tab1() : QWidget()
         shift_column_btn -> setCursor(Qt::PointingHandCursor);
         QObject::connect(shift_column_btn, SIGNAL(clicked()), this, SLOT(shiftColumn()));
         grid->addWidget(shift_column_btn, 2, 1);
-//    TrainTestLabel* label = new TrainTestLabel(this);
-//    grid->addWidget(label, 1, 0);
-
-//    QSlider* slider = new QSlider(Qt::Horizontal, this);
-//    slider->setTickInterval(100);
-//    slider->setValue(50);
-//    slider->setMinimum(1);
-//    QObject::connect(slider, SIGNAL(valueChanged(int)), label, SLOT(setCustomText(int)));
-//    grid->addWidget(slider, 1, 1);
-
-//    int train = slider->value();
-//    QString labelText = "<b>Train/Test : </b>";
-//    labelText.append(QStringLiteral("%1/%2").arg(train).arg(100-train));
-//    label->setText(labelText);
 
 
 
@@ -128,10 +114,10 @@ Tab1::Tab1() : QWidget()
     //Bouton qui lance le learning
     learning_button = new QPushButton("Entrainer le réseau");
     learning_button -> setCursor(Qt::PointingHandCursor);
-    learning_button -> setDisabled(true);
-//    QObject::connect(learning_button, SIGNAL(clicked()), qApp, SLOT(quit()));
-    TrainDialog *tesst = new TrainDialog();
-    QObject::connect(learning_button, SIGNAL(clicked()), tesst, SLOT(Test()));
+//    learning_button -> setDisabled(true);
+    learning_button -> setDisabled(false);
+    TrainDialog *tesst = new TrainDialog(this);
+    QObject::connect(learning_button, SIGNAL(clicked()), tesst, SLOT(show()));
     grid -> addWidget(learning_button, 4, 5);
 }
 void Tab1::resetInputFormNeurons(){
@@ -139,7 +125,7 @@ void Tab1::resetInputFormNeurons(){
 }
 void Tab1::enablingDisablingButtons(){
     pop_layer_button->setEnabled(paintWidget->getNNlayers().size() > 0);
-    learning_button->setEnabled(paintWidget->getNNlayers().size() > 0);
+    learning_button->setEnabled(paintWidget->getNNlayers().size() > 0 && data->isFilled());
 }
 void Tab1::loadCustomData()
 {
@@ -161,6 +147,7 @@ void Tab1::loadCustomData()
             comboBox_2->addItems(inputColumns);
         }
     }
+    enablingDisablingButtons();
 }
 
 void Tab1::selectData()
@@ -186,8 +173,9 @@ void Tab1::selectData()
 
 void Tab1::QuandlDialog()
 {
-    class QuandlDialog* quandlDialog = new class QuandlDialog(data, table);
+    class QuandlDialog* quandlDialog = new class QuandlDialog(data, table, comboBox_1, comboBox_2);
     quandlDialog->show();
+    enablingDisablingButtons();
 }
 
 void Tab1::DataPreprocessDialog()
@@ -252,7 +240,7 @@ void Tab1::duplicateColumn()
 
 void Tab1::shiftColumn()
 {
-    if(comboBox_1->currentText() != "--No column--"){
+    if(comboBox_1->currentText() != "--No column--" && data->getInput().size() > 1){
         data->shiftColumn(comboBox_2->currentText());
         table->fill(data);
         comboBox_1->clear();
@@ -272,14 +260,3 @@ Tab1::~Tab1()
 
 
 
-TrainTestLabel::TrainTestLabel(QWidget* parent): QLabel(parent)
-{
-
-}
-
-void TrainTestLabel::setCustomText(int train)
-{
-    QString labelText = "<b>Train/Test : </b>";
-    labelText.append(QStringLiteral("%1/%2").arg(train).arg(100-train));
-    this->setText(labelText);
-}

@@ -78,17 +78,10 @@ void Data::openCSV(QString pathToCSV, QList<QString> selectedInputColumns, QStri
         }
 
     }
-//    for(int i = 0; i < outputColumns.length(); i++){
-//        input_col_names.removeAll(outputColumns[i]);
-//        input_col_names.append(QStringLiteral("OUTPUT_%1 [%2]").arg(i).arg(outputColumns[i]));
-//        selectedOutputIndices.append(i);
-//    }
-    qDebug() << input_col_names;
-    qDebug() << selectedInputIndices;
-//    //On commence à 1 pour ne pas prendre en compte la première ligne (en suppose qu'elle contient le nom des colonnes)
+    //On commence à 1 pour ne pas prendre en compte la première ligne (en suppose qu'elle contient le nom des colonnes)
     for(int i = 1; i < lines.length(); i++){
         QList<QByteArray> liste = lines[i].split(',');
-        if(liste.length() >= selectedInputIndices.last()){
+        if(liste.length() >= selectedInputIndices.last() && lines[i] != ""){
             std::vector<double> vecInput;
             std::vector<double> vecOutput;
             Q_FOREACH (const int& indice, selectedInputIndices){

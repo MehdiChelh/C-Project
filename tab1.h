@@ -69,13 +69,6 @@ private:
 };
 
 
-class TrainTestLabel: public QLabel
-{
-    Q_OBJECT
-public:
-    TrainTestLabel(QWidget* parent);
-public slots:
-    void setCustomText(int);
-};
+
 
 #endif // TAB1_H

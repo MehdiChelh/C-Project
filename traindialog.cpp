@@ -1,7 +1,54 @@
 #include "traindialog.h"
 
-TrainDialog::TrainDialog(): QDialog()
+TrainDialog::TrainDialog(QWidget* parent): QDialog(parent)
 {
+    this->setWindowTitle("Train and test");
+
+    QGridLayout* grid = new QGridLayout(this);
+    this->setLayout(grid);
+
+    QGroupBox *settings = new QGroupBox(this);
+    settings->setTitle(QString("Settings of the learning :"));
+    QGridLayout* groupBoxGrid = new QGridLayout(settings);
+    settings->setLayout(groupBoxGrid);
+    grid->addWidget(settings, 0, 0, 1, 2);
+
+    QLabel* alphaLabel = new QLabel("ALpha : ", this);
+        groupBoxGrid->addWidget(alphaLabel, 0, 0);
+    QLineEdit* alphaQline = new QLineEdit(this);
+        groupBoxGrid->addWidget(alphaQline, 0, 1);
+
+    QLabel* etaLabel = new QLabel("Eta : ", this);
+        groupBoxGrid->addWidget(etaLabel, 1, 0);
+    QLineEdit* etaQline = new QLineEdit(this);
+        groupBoxGrid->addWidget(etaQline, 1, 1);
+
+    QLabel* nIterLabel = new QLabel("Nombre d'itérations : ", this);
+        groupBoxGrid->addWidget(nIterLabel, 2, 0);
+    QLineEdit* nIterQline = new QLineEdit(this);
+        groupBoxGrid->addWidget(nIterQline, 2, 1);
+
+
+    QGroupBox *settings2 = new QGroupBox(this);
+    settings2->setTitle(QString("Splitting the dataset between train and test :"));
+    QGridLayout* groupBoxGrid2 = new QGridLayout(settings2);
+    settings2->setLayout(groupBoxGrid2);
+    grid->addWidget(settings2, 1, 0, 1, 2);
+
+    TrainTestLabel* label = new TrainTestLabel(this);
+    groupBoxGrid2->addWidget(label, 1, 0);
+
+    QSlider* slider = new QSlider(Qt::Horizontal, this);
+    slider->setTickInterval(100);
+    slider->setValue(50);
+    slider->setMinimum(1);
+    QObject::connect(slider, SIGNAL(valueChanged(int)), label, SLOT(setCustomText(int)));
+    groupBoxGrid2->addWidget(slider, 1, 1);
+
+    int train = slider->value();
+    QString labelText = "<b>Train/Test : </b>";
+    labelText.append(QStringLiteral("%1/%2").arg(train).arg(100-train));
+    label->setText(labelText);
 
 }
 void TrainDialog::Test()
@@ -40,4 +87,17 @@ void TrainDialog::Test()
         qDebug() << result_vals[0] << "\n";
         target_vals.clear();
     };
+}
+
+
+TrainTestLabel::TrainTestLabel(QWidget* parent): QLabel(parent)
+{
+
+}
+
+void TrainTestLabel::setCustomText(int train)
+{
+    QString labelText = "<b>Train/Test : </b>";
+    labelText.append(QStringLiteral("%1/%2").arg(train).arg(100-train));
+    this->setText(labelText);
 }

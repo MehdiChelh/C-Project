@@ -26,7 +26,7 @@ class QuandlDialog : public QDialog
 {
     Q_OBJECT
 public:
-    QuandlDialog(Data* _data, TableWidget* _table);
+    QuandlDialog(Data* _data, TableWidget* _table, QComboBox* _comboBox_1, QComboBox* _comboBox_2);
     ~QuandlDialog();
 public slots:
     void enablingSelection();
@@ -45,6 +45,8 @@ private:
     QLineEdit* destination_folder;
     Data* data;
     TableWidget *table;
+    QComboBox* comboBox_1;
+    QComboBox* comboBox_2;
 };
 
 
