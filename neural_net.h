@@ -6,6 +6,9 @@
 #include <QProgressBar>
 #include <cassert>
 #include <math.h>
+#include "testresult.h"
+
+using namespace std;
 
 class Neuron;
 typedef std::vector<Neuron> Layer;
@@ -14,14 +17,15 @@ typedef std::vector<Neuron> Layer;
 class Neural_Net
 {
 public:
-    Neural_Net(const std::vector<unsigned> &topology);
-    void Feed_Forward(const std::vector<double> &inputVals);
-    void Generalized_Delta_Rule(const std::vector<double> &targetVals, double alpha, double eta);
-    void Get_Results(std::vector<double> &resultVals) ;
+    Neural_Net(const vector<unsigned> &topology);
+    void Feed_Forward(const vector<double> &inputVals);
+    void Generalized_Delta_Rule(const vector<double> &targetVals, double alpha, double eta);
+    void Get_Results(vector<double> &resultVals);
+    void CalculateRMSE(const vector<double> &targetVals);
     double Get_Error() { return m_error; }
 
 private:
-    std::vector<Layer> m_id_layer_neuron; // m_id_layer_neuron[layerNum][neuronNum]
+    vector<Layer> m_id_layer_neuron; // m_id_layer_neuron[layerNum][neuronNum]
     double m_error;
 };
 
@@ -43,8 +47,8 @@ public:
 private:
     static double activation_fuction(double x);
     double m_output_value;
-    std::vector<double> m_output_weight;
-    std::vector<double> m_output_delta_weight;
+    vector<double> m_output_weight;
+    vector<double> m_output_delta_weight;
     unsigned m_myIndex;
     double m_delta;
 };
@@ -58,22 +62,24 @@ signals:
     void signalProgress(int);
     void signalMSE(QString);
 public:
-    Training_Data();
-    void Train(std::vector<unsigned> topology,unsigned int nb_iteration_base, double val_alpha, double val_eta, std::vector<std::vector<double>> input_values, std::vector<std::vector<double>> target_values);
+    Training_Data(std::vector<unsigned> topology);
+    void Train(unsigned int nb_iteration_base, double val_alpha, double val_eta, vector<vector<double>> input_values, vector<vector<double>> target_values);
+    TestResult Test(vector<vector<double>> input_values, vector<vector<double>> target_values);
     void progressValueChanged(int val){ emit signalProgress(val); }
     void newMSE(QString val){ emit signalMSE(val); }
     double Get_Output_Val_Alpha(void){ return m_val_alpha; }
     double Get_Output_Val_Eta(void) { return m_val_eta; }
-    std::vector<double> Get_Error(void) { return m_mean_error; }
-    std::vector<std::vector<double>> Get_Output_Val(void) {
+    vector<double> Get_Error(void) { return m_mean_error; }
+    vector<vector<double>> Get_Output_Val(void) {
         return m_result_value
             ;
     }
 private:
-    std::vector<double> m_mean_error;
+    Neural_Net Net;
+    vector<double> m_mean_error;
     double m_val_alpha;
     double m_val_eta;
-    std::vector<std::vector<double>> m_result_value;
+    vector<vector<double>> m_result_value;
 };
 
 

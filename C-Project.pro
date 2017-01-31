@@ -19,7 +19,8 @@ SOURCES += \
     neural_net.cpp \
     traindialog.cpp \
     daterangedialog.cpp \
-    datadialog.cpp
+    datadialog.cpp \
+    testresult.cpp
 
 HEADERS += \
     window.h \
@@ -36,6 +37,7 @@ HEADERS += \
     neural_net.h \
     traindialog.h \
     daterangedialog.h \
-    datadialog.h
+    datadialog.h \
+    testresult.h
 
 unix|win32: LIBS += -lcurl.4

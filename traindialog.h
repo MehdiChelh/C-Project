@@ -17,6 +17,7 @@
 #include "neural_net.h"
 #include "data.h"
 #include "neural_net.h"
+#include "testresult.h"
 
 using namespace std;
 
@@ -36,8 +37,16 @@ private:
     QSlider* slider;
     QProgressBar* trainProgress;
     QTreeWidget* mseList;
+    QPushButton* test_btn;
+    QLabel* testRMSEResult;
+    QTreeWidget* testResultsList;
     Data* data;
-    std::vector<unsigned int>* topology;
+    Training_Data* Train_Test;
+    vector<unsigned int>* topology;
+    vector<vector<double>> train_input;
+    vector<vector<double>> train_output;
+    vector<vector<double>> test_input;
+    vector<vector<double>> test_output;
 };
 
 

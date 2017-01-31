@@ -61,22 +61,35 @@ TrainDialog::TrainDialog(QWidget* parent, Data* _data, std::vector<unsigned int>
     QObject::connect(traintest_btn, SIGNAL(clicked()), this, SLOT(TrainTest()));
     grid->addWidget(traintest_btn, 2, 0);
 
-    QLabel* progression = new QLabel(this);
-    progression->setText("Progression : ");
-    progression->hide();
-    QObject::connect(traintest_btn, SIGNAL(clicked()), progression, SLOT(show()));
-    grid->addWidget(progression, 3, 0);
+    QLabel* progression = new QLabel("Progression : ", this);
+        progression->hide();
+        QObject::connect(traintest_btn, SIGNAL(clicked()), progression, SLOT(show()));
+        grid->addWidget(progression, 3, 0);
 
     trainProgress = new QProgressBar(this);
-    trainProgress->hide();
-    grid->addWidget(trainProgress, 4, 0);
+        trainProgress->hide();
+        grid->addWidget(trainProgress, 4, 0);
 
     mseList = new QTreeWidget(this);
-    QStringList list;
-    list << QString("Iteration") << QString("MSE");
-    mseList->setHeaderItem(new QTreeWidgetItem(list));
-    mseList->hide();
-    grid->addWidget(mseList, 5, 0);
+        QStringList list;
+        list << QString("Iteration") << QString("MSE");
+        mseList->setHeaderItem(new QTreeWidgetItem(list));
+        mseList->hide();
+        grid->addWidget(mseList, 5, 0);
+
+    test_btn = new QPushButton("Apply neural network on test dataset >", this);
+        test_btn -> setCursor(Qt::PointingHandCursor);
+        test_btn -> hide();
+        QObject::connect(test_btn, SIGNAL(clicked()), this, SLOT(Test()));
+        grid->addWidget(test_btn, 6, 0);
+
+    testRMSEResult = new QLabel(this);
+        testRMSEResult->hide();
+        grid->addWidget(testRMSEResult, 1, 0);
+
+    testResultsList = new QTreeWidget(this);
+        testResultsList->hide();
+        grid->addWidget(testResultsList, 1, 1, 6, 1);
 }
 
 
@@ -92,24 +105,25 @@ void TrainDialog::TrainTest()
                 if(alphaQline->text().toDouble() > 0 && etaQline->text().toDouble() > 0 && nIterQline->text().toDouble() > 0){
                     trainProgress->show();
                     mseList->show();
+                    test_btn->show();
                     double split_value = slider->value();
                     std::vector<std::vector<std::vector<double>>> train_test_data = data->splitData(split_value);
                     //On normalise les données :
                     Data::normalizeData(&train_test_data);
                     //On stock les jeux de données d'entrainement et de test dans dans vector différents
-                    std::vector<std::vector<double>> train_input = train_test_data[0];
-                    std::vector<std::vector<double>> train_output = train_test_data[1];
-                    std::vector<std::vector<double>> test_input = train_test_data[2];
-                    std::vector<std::vector<double>> test_output = train_test_data[3];
+                    train_input = train_test_data[0];
+                    train_output = train_test_data[1];
+                    test_input = train_test_data[2];
+                    test_output = train_test_data[3];
                     qDebug() << "Train input size : " << train_input.size();
 
                     //On paramètre la barre de progression de l'avancement du learning :
                     trainProgress->setMinimum(0);
                     trainProgress->setMaximum(nIterQline->text().toDouble()*train_input.size());
-                    Training_Data Train_Test;
-                    QObject::connect(&Train_Test, SIGNAL(signalProgress(int)), trainProgress, SLOT(setValue(int)));
-                    QObject::connect(&Train_Test, SIGNAL(signalMSE(QString)), this, SLOT(addMSEListItem(QString)));
-                    Train_Test.Train(*topology, nIterQline->text().toDouble(), alphaQline->text().toDouble(),
+                    Train_Test = new Training_Data(*topology);
+                    QObject::connect(Train_Test, SIGNAL(signalProgress(int)), trainProgress, SLOT(setValue(int)));
+                    QObject::connect(Train_Test, SIGNAL(signalMSE(QString)), this, SLOT(addMSEListItem(QString)));
+                    Train_Test->Train(nIterQline->text().toDouble(), alphaQline->text().toDouble(),
                                   etaQline->text().toDouble(), train_input, train_output);
                 }else{
                     message = new QMessageBox(QMessageBox::Warning, "Error", "Alpha, eta and the number of iterations can't be null.");
@@ -137,40 +151,31 @@ void TrainDialog::addMSEListItem(QString val)
 
 void TrainDialog::Test()
 {
-    vector<unsigned int> topo;
-    topo.push_back(2);
-    topo.push_back(4);
-    topo.push_back(3);
-    topo.push_back(1);
-    Neural_Net My_Neural_Net(topo);
-    qDebug() << topo[0];
-    //exemple d entrainement du reseau de neuronnes avec le probleme xor
-    //on met des 1 ou 0
-    vector<double> Xor;
-    vector<double> _Xor;
-    vector<double> xor_target;//valeur a predire
-    for (unsigned nb = 0; nb < 1000; ++nb) {
-        Xor.push_back(rand() % 2);
-        _Xor.push_back(rand() % 2);
-        xor_target.push_back(Xor[nb] == _Xor[nb] ? 0 : 1);
-    };
-    vector <double> input_vals, result_vals, target_vals;
-    input_vals.push_back(_Xor[0]);
-    input_vals.push_back(Xor[0]);
-    for (unsigned i = 0; i < xor_target.size(); ++i) {
-        qDebug() << "valeur a predire: ";
-        qDebug() << xor_target[i] << "     ";
-        target_vals.push_back(xor_target[i]);
-        input_vals[0] = _Xor[i];
-        input_vals[1] = Xor[i];
-        My_Neural_Net.Feed_Forward(input_vals);
-        My_Neural_Net.Get_Results(result_vals);
-        My_Neural_Net.Generalized_Delta_Rule(target_vals, 0.8, 0.3);
+    QList<QString> resultColumnsName;
+    for(int i = 0; i < data->getOutputColumnsName().size(); i++){
+        resultColumnsName.append("[Pred.] " + data->getOutputColumnsName()[i]);
+    }
+    resultColumnsName << "RMSE";
+    testResultsList->setHeaderLabels(data->getOutputColumnsName() + resultColumnsName);
+    this->resize(800, 800*9/16);
+    testResultsList->show();
+    TestResult result = Train_Test->Test(test_input, test_output);
 
-        qDebug() << "valeur predite: ";
-        qDebug() << result_vals[0] << "\n";
-        target_vals.clear();
-    };
+    //On affiche le RMSE dans la fenêtre
+    QString text = "The RMSE (Root Mean Square Error) on the "
+                   "test dataset is : <br/>" + QString::number(result.getRMSE());
+    testRMSEResult->setText(text);
+
+    //On remplit le tableau affichant les valeurs prédites
+    for(int i = 0; i < test_output.size(); i++){
+        QList<QString> list;
+        for(int k = 0; k < test_output[i].size(); k++)
+            list << QString::number(test_output[i][k]);
+        for(int k = 0; k < result.getOutputValues()[i].size(); k++)
+            list << QString::number(result.getOutputValues()[i][k]);
+        list << QString::number(result.getRMSEVec()[i]);
+        testResultsList->addTopLevelItem(new QTreeWidgetItem(list));
+    }
 }
 
 TrainTestLabel::TrainTestLabel(QWidget* parent): QLabel(parent)
