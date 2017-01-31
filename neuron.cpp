@@ -11,12 +11,10 @@ Neuron::Neuron(unsigned numOutputs, unsigned myIndex)
     m_myIndex = myIndex;
 }
 
+//calcul de l output dans un neurone a partir des poids et inputs lies a la couche precedente
 void Neuron::Feed_Forward(const Layer &prevLayer)
 {
     double sum = 0.0;
-
-    // Sum the previous layer's outputs (which are our inputs)
-    // Include the bias node from the previous layer.
 
     for (unsigned n = 0; n < prevLayer.size(); ++n) {
         sum += prevLayer[n].Get_Output_val() *
@@ -26,18 +24,17 @@ void Neuron::Feed_Forward(const Layer &prevLayer)
     m_output_value = Neuron::activation_fuction(sum);
 }
 
+//fonction d activation
 double Neuron::activation_fuction(double x)
 {
-    // tanh - output range [-1.0..1.0]
 
     return tanh(x);
 }
 
+//calcul de delta dans les hidden layers
 void Neuron::Calc_Hidden_Grad(const Layer &nextLayer)
 {
     double sum = 0.0;
-
-    // Sum our contributions of the errors at the nodes we feed.
 
     for (unsigned n = 0; n < nextLayer.size() - 1; ++n) {
         sum += m_output_weight[n] * nextLayer[n].m_delta;
@@ -45,17 +42,13 @@ void Neuron::Calc_Hidden_Grad(const Layer &nextLayer)
     m_delta = sum * (1 - (m_output_value*m_output_value));
 }
 
+//mis a jour des poids
 void Neuron::update_input_weights(Layer &prevLayer, double alpha, double eta)
 {
-    // The weights to be updated are in the Connection container
-    // in the neurons in the preceding layer
-
     for (unsigned n = 0; n < prevLayer.size(); ++n) {
         Neuron &neuron = prevLayer[n];
         double oldDeltaWeight = neuron.m_output_delta_weight[m_myIndex];
-
-        // Individual input, magnified by the gradient and train rate:
-        // Also add momentum = a fraction of the previous delta weight;
+        // eta et alpha sont les parametres a definir par l utilisateur de l interface graphique
         double newDeltaWeight = eta*neuron.Get_Output_val()*m_delta + alpha*oldDeltaWeight;
 
         neuron.m_output_delta_weight[m_myIndex] = newDeltaWeight;
@@ -63,7 +56,7 @@ void Neuron::update_input_weights(Layer &prevLayer, double alpha, double eta)
     }
 }
 
-
+//calcul de delta dans l ouput layer
 void Neuron::Calc_Output_Grad(double targetVal)
 {
     double delta = targetVal - m_output_value;
