@@ -21,7 +21,8 @@ SOURCES += \
     daterangedialog.cpp \
 #    datadialog.cpp \
     testresult.cpp \
-#    neuron.cpp
+    neuron.cpp \
+    training_data.cpp
 
 HEADERS += \
     window.h \
@@ -40,6 +41,7 @@ HEADERS += \
     daterangedialog.h \
 #    datadialog.h \
     testresult.h \
-#    neuron.h
+    neuron.h \
+    training_data.h
 
 unix|win32: LIBS += -lcurl.4
