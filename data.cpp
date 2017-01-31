@@ -5,28 +5,6 @@ Data::Data()
 
 }
 
-bool Data::isInferior(QString date1, QString date2)
-{
-    QStringList date1List = date1.split("-");
-    QStringList date2List = date2.split("-");
-    if(date1List[0] < date2List[0]){
-        return true;
-    }
-    else{
-        if(date1List[0] == date2List[0] && (date1List[1] < date2List[1])){
-            return true;
-        }
-        else{
-            if(date1List[0] == date2List[0] && (date1List[1] == date2List[1]) && (date1List[2] <= date2List[2])){
-                return true;
-            }
-            else{
-                return false;
-            }
-        }
-    }
-}
-
 QList<QByteArray> Data::getColumnsOfCSV(QString pathToCSV)
 {
     QFile file(pathToCSV);
@@ -73,7 +51,6 @@ void Data::openCSV(QString pathToCSV, QList<QString> selectedInputColumns, QStri
         if(dateLabel == entete[i])
         {
             dateIndice = i;
-            qDebug() << "dateIndice" << dateIndice;
         }
 
         if(output_col_names.contains(entete[i]) && entete[i] != dateLabel){
@@ -121,13 +98,10 @@ void Data::duplicateColumn(QString column_name)
 
 void Data::shiftColumn(QString column_name)
 {
-    qDebug() << "ok1";
     int index = input_col_names.indexOf(column_name);
     std::vector<std::vector<double>> new_input;
-    qDebug() << "ok2";
     for(int i = 0; i < input.size() - 1; i++){
         std::vector<double> vec;
-        qDebug() << i;
         for(int j = 0; j < input[i].size(); j++){
             if(j==index){
                 vec.push_back(input[i+1][j]);
@@ -135,11 +109,9 @@ void Data::shiftColumn(QString column_name)
             else{
                 vec.push_back(input[i][j]);
             }
-            qDebug()<<j;
         }
         new_input.push_back(vec);
     }
-    qDebug() << "ok3";
     input = new_input;
     output.pop_back();
 }
@@ -179,14 +151,6 @@ void Data::normalizeData(std::vector<std::vector<std::vector<double>>>* _train_t
         }
     }
     *_train_test = train_test;
-}
-
-QList<QString> Data::getDate(){
-    return date;
-}
-
-std::vector<std::vector <double>> Data::getInput(){
-    return input;
 }
 
 QList<QString> Data::byteArraysToStrings(QList<QByteArray> listBA)

@@ -16,8 +16,8 @@
 #include <QMessageBox>
 #include "neural_net.h"
 #include "data.h"
-#include "neural_net.h"
 #include "testresult.h"
+#include "training_data.h"
 
 using namespace std;
 

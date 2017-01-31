@@ -18,7 +18,7 @@ SOURCES += \
     preprocdialog.cpp \
     neural_net.cpp \
     traindialog.cpp \
-    daterangedialog.cpp \
+#    daterangedialog.cpp \
 #    datadialog.cpp \
     testresult.cpp \
     neuron.cpp \
@@ -38,7 +38,7 @@ HEADERS += \
     preprocdialog.h \
     neural_net.h \
     traindialog.h \
-    daterangedialog.h \
+#    daterangedialog.h \
 #    datadialog.h \
     testresult.h \
     neuron.h \

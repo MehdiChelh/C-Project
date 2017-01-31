@@ -1,6 +1,4 @@
 #include "window.h"
-#include "tab1.h"
-#include "tab2.h"
 
 Window::Window() : QTabWidget()
 {
@@ -11,10 +9,6 @@ Window::Window() : QTabWidget()
     tab1 = new Tab1();
     const QString label ="Train/Test";
     this->addTab(tab1, label);
-
-//    tab2 = new Tab2();
-//    const QString label2 ="Test";
-//    this->addTab(tab2, label2);
 
 }
 

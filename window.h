@@ -5,6 +5,7 @@
 #include <QWidget>
 #include <QPushButton>
 #include <QTabWidget>
+#include "tab1.h"
 
 class Window: public QTabWidget
 {

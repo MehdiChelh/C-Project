@@ -7,6 +7,7 @@
 #include <cassert>
 #include <math.h>
 #include "testresult.h"
+#include "neural_net.h"
 
 using namespace std;
 class Neuron;

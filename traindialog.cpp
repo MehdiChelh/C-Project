@@ -4,7 +4,6 @@ TrainDialog::TrainDialog(QWidget* parent, Data* _data, std::vector<unsigned int>
 {
     data = _data;
     topology = _topology;
-    qDebug() << topology;
 
     this->setWindowTitle("Train and test");
 

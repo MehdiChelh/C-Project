@@ -14,7 +14,6 @@ void TableWidget::fill(Data* data)
 
     QList<QString> input_col_names = data->getInputColumnsName();
     QList<QString> output_col_names = data->getOutputColumnsName();
-    qDebug() << output_col_names;
     QList<QString> date = data->getDate();
     std::vector<std::vector <double>> input = data->getInput();
     std::vector<std::vector <double>> output = data->getOutput();
@@ -23,8 +22,6 @@ void TableWidget::fill(Data* data)
 
     this->setColumnCount(cols);
     this->setRowCount(rows);
-    qDebug() << input.size();
-    qDebug() << date.size();
     for(int i = 0; i < input_col_names.length(); i ++)
         this->setHorizontalHeaderItem(i, new QTableWidgetItem(QString(input_col_names[i])));
     for(int i = 0; i < output_col_names.length(); i ++)
@@ -39,5 +36,4 @@ void TableWidget::fill(Data* data)
             this->setItem(i, input[i].size() + k, new QTableWidgetItem(QString::number(output[i][k])));
         }
     }
-    qDebug() << "Construction";
 }

@@ -30,7 +30,6 @@ void QuandlSearch::searchResponse()
 
     curl = curl_easy_init();
     if(curl) {
-        qDebug() << "https://www.quandl.com/api/v3/datasets.json?query="+searchKeywords->text();
         std::string url = std::string("https://www.quandl.com/api/v3/datasets.json?api_key=kuExaMxAa629HY7dRvgH&"
                                       "database_code=WIKI&per_page=5&page=1&query=")
                                         + std::string(searchKeywords->text().toUtf8().constData());

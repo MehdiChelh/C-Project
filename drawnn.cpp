@@ -94,7 +94,6 @@ void DrawNN::mousePressEvent(QMouseEvent * event)
             QString text = "Nombre de neurones : " + QString::number(NNlayers[i]);
             text += QString("\n\nChanger le nombre de neurones :");
             QString neurons = QInputDialog::getText(this, title, text);
-            qDebug() << neurons;
             if(neurons != QString(""))
             {
                 if(neurons.toInt() == 0){
