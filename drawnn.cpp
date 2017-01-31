@@ -26,7 +26,7 @@ void DrawNN::paintEvent(QPaintEvent *)
         painter.setPen( Qt::NoPen );
         int maxNeuronsPerLayer = 0;
         for(int i = 0; i < nLayers; i++){
-            if(NNlayers[i] > maxNeuronsPerLayer)
+            if(NNlayers[i] > (unsigned)maxNeuronsPerLayer)
             {
                 maxNeuronsPerLayer = NNlayers[i];
             }
@@ -52,11 +52,11 @@ void DrawNN::paintEvent(QPaintEvent *)
         for(int i = 0; i < nLayers; i++){
             dy = (HEIGHT - NNlayers[i]*ellipse_size)/2;
             delimiters.push_back(((xSpace + ellipse_size)*i));
-            for(int j = 0; j < NNlayers[i]; j++){
+            for(unsigned int j = 0; j < NNlayers[i]; j++){
                 painter.drawEllipse(xSpace*i + i*ellipse_size, dy + j*ellipse_size, ellipse_size, ellipse_size);
                 if(i < nLayers - 1){
                     dyNext = (HEIGHT - NNlayers[i+1]*ellipse_size)/2;
-                    for(int k = 0; k < NNlayers[i+1]; k++){
+                    for(unsigned int k = 0; k < NNlayers[i+1]; k++){
     //                    painter.drawLine(xSpace*i + (i + 0.5)*ellipse_size, dy + (j + 0.5)*ellipse_size, xSpace*(i+1) + (i+1+0.5)*ellipse_size, dyNext + (k+0.5)*ellipse_size);
                     }
                 }
@@ -68,7 +68,7 @@ void DrawNN::mouseMoveEvent(QMouseEvent * event)
 {
     int x = event->pos().x();
     int noRect = true;
-    for(int i = 0; i < delimiters.size(); i++)
+    for(unsigned int i = 0; i < delimiters.size(); i++)
     {
         if(x < delimiters[i]+ellipse_size && delimiters[i] < x)
         {
@@ -86,7 +86,7 @@ void DrawNN::mouseMoveEvent(QMouseEvent * event)
 void DrawNN::mousePressEvent(QMouseEvent * event)
 {
     int x = event->pos().x();
-    for(int i = 0; i < delimiters.size(); i++)
+    for(unsigned int i = 0; i < delimiters.size(); i++)
     {
         if(x < delimiters[i]+ellipse_size && delimiters[i] < x)
         {
