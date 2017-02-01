@@ -16,7 +16,6 @@
 #include <curl/curl.h>
 #include <QDebug>
 #include <QFileDialog>
-#include "daterangedialog.h"
 #include <QMessageBox>
 
 class QuandlSearch : public QDialog
